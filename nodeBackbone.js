@@ -65,11 +65,41 @@ app.set('port', port);
    // content //
   /////////////
 
+// TODO: use sessions to detect login, direct to either '/login' or '/'
+
 app.get('/', func1);
+app.get('/farmer', funcFarmer);
+app.get('/box-packer', funcBoxPacker);
+app.get('/csa-supporter', funcCsaSupporter);
+app.get('/admin', funcAdmin);
 
 function func1(req, res){
     content = {title: 'CSA Database'};
-    res.render('home', content);
+    res.render('home6', content);
+}
+
+function funcFarmer(req, res){
+    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
+    content = {title: 'CSA Database – Farmer'};
+    res.render('farmer0', content);
+}
+
+function funcBoxPacker(req, res){
+    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
+    content = {title: 'CSA Database – Box Packer'};
+    res.render('boxPacker0', content);
+}
+
+function funcCsaSupporter(req, res){
+    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
+    content = {title: 'CSA Database – CSA Supporter'};
+    res.render('csaSupporter0', content);
+}
+
+function funcAdmin(req, res){
+    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
+    content = {title: 'CSA Database – Administrator'};
+    res.render('admin0', content);
 }
 
     ////////////
