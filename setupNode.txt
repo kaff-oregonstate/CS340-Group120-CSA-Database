@@ -1,0 +1,31 @@
+//make sure node is installed on machine
+
+npm install express
+npm install express-handlebars
+npm install express-session
+npm install body-parser
+npm install mysql
+
+
+
+
+
+
+// npm install request
+// npm install jquery
+// npm install http-server
+
+
+
+
+
+
+
+// get local ip address:
+// ipconfig getifaddr en0
+
+
+git clone https://github.com/kaff-oregonstate/cs290_kaffs_hw6.git
+
+	kaff-oregonstate
+	e6w2JKvmw6gg4zG
