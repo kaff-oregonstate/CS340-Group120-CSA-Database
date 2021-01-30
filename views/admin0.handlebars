@@ -1,7 +1,27 @@
 <!-- admin0.handlebars -->
+<nav class="bg-white py-2" id="HomePageHeader">
+    <h1 class="mx-4">Rubyfruit Farm ~ Admin</h1>
+</nav>
 
 <div class="container-lg">
-<div id="HomePageHeader">
-    <h1>Administrator</h1>
-</div>
+
+    <div class="card text-center bg-green m-5" style="width: auto;">
+        {{!-- <img class="card-img-top" src="box_veggies.jpg" alt="photograph of vegetables on a blue background"> --}}
+        <div class="card-body">
+
+            <button type="button" class="btn btn-lg btn-green btn-block ">
+                <a class="text-decoration-none text-reset" href="/admin-add-cust">add new customer</a>
+            </button>
+
+            <button type="button" class="btn btn-lg btn-green btn-block">
+                <a class="text-decoration-none text-reset" href="/admin-updt-cust">update customer subscription</a>
+            </button>
+
+            <button type="button" class="btn btn-lg btn-green btn-block">
+                <a class="text-decoration-none text-reset" href="/admin-cncl-subs">cancel subscription</a>
+            </button>
+
+        </div>
+    </div>
+
 </div>

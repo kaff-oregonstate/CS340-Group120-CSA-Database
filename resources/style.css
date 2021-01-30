@@ -9,18 +9,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,600;1,600&display=swap');
 
 body {
-  color: white;
-  background-color: #343434;
+  color: black;
+  background-color:white;
   font-family: 'Open Sans', serif;
   font-weight: 300;
   font-size: 1.4rem;
 }
 
 h1 {
-    font-family: 'Source Serif Pro', serif;
-    font-style: italic;
-    font-weight: 700;
-    font-size: 60pt;
+    font-family: 'Roboto', serif;
+    /* font-style: italic; */
+    /* font-weight: 700; */
+    font-weight: 300;
+    font-size: 3em;
     line-height: 1.0;
     letter-spacing: 1px;
     margin-top: 0;
@@ -212,3 +213,41 @@ pre {
     color: white;
     white-space: normal;
 }
+
+/* css additions for button style on farm supporter */
+
+button{
+    margin: .3em;
+}
+
+.bg-green{
+    background: #6EAD5C;
+}
+
+.btn-green{
+    color:#4e7e41;
+    background-color: #F9FFDF;
+    border-color:#6EAD5C;
+}
+.btn-green:hover{
+    color: #F9FFDF;
+    background-color:#4e7e41;
+    border-color: #4e7e41;
+}
+
+/* bootstrap settings didn't work on white background for DAVID HOME PAGE quick fix by overriding the bootstrap class */
+
+.btn-outline-secondary{
+    color:white;
+    background-color: #217036;
+    border-color:#217036;  
+}
+
+.btn-outline-secondary:hover{
+    color: #fff;
+    background-color:#389651;
+    border-color: #389651;
+}
+
+
+

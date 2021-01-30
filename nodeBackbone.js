@@ -70,8 +70,20 @@ app.set('port', port);
 app.get('/', func1);
 app.get('/farmer', funcFarmer);
 app.get('/box-packer', funcBoxPacker);
+
+//routes for csa-supporter page and sub-pages (amelia)
 app.get('/csa-supporter', funcCsaSupporter);
+app.get('/csa-supporter-next', func_next_box);
+app.get('/csa-supporter-prev', func_prev_box);
+app.get('/csa-supporter-subs', func_subs);
+app.get('/csa-supporter-cust', func_cust);
+
+//routes for admin page and sub-pages
 app.get('/admin', funcAdmin);
+app.get('/admin-add-cust',func_add_cust);
+app.get('/admin-updt-cust',func_updt_cust);
+app.get('/admin-cncl-subs',func_cncl_subs);
+
 
 function func1(req, res){
     content = {title: 'CSA Database'};
@@ -90,17 +102,62 @@ function funcBoxPacker(req, res){
     res.render('boxPacker0', content);
 }
 
+// Amelia's Pages: include pages that manage CSA supporters & Admin
+
+// ***CSA SUPPPORTER PAGES***
+
 function funcCsaSupporter(req, res){
-    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
-    content = {title: 'CSA Database – CSA Supporter'};
-    res.render('csaSupporter0', content);
+  // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
+  content = {title: 'CSA Database – CSA Supporter'};
+  res.render('csaSupporter0', content);
 }
 
-function funcAdmin(req, res){
-    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
-    content = {title: 'CSA Database – Administrator'};
-    res.render('admin0', content);
+// renders handlebars view to show the user the box items in the next week's CSA box
+function func_next_box(req, res){
+    content = {title: 'Rubyfruit Farm - Boxes'};
+    res.render('csaSupporter1', content);
 }
+
+// renders handlebars view to show the user the box items in the previous week's CSA box
+function func_prev_box(req,res){
+  content = {title: 'Rubyfruit Farm - Boxes'};
+  res.render('csaSupporter2', content);
+}
+
+// renders handlebars view to show the user their subscription information
+function func_subs(req,res){
+  content = {title: 'Rubyfruit Farm - Subscription'};
+  res.render('csaSupporter3', content);
+}
+
+// renders handlebars view to allow the customer to contact customer service
+function func_cust(req,res){
+  content = {title: 'Rubyfruit Farm - Customer Service'};
+  res.render('csaSupporter4', content);
+}
+
+// ***ADMIN PAGES***
+
+function funcAdmin(req, res){
+  content = {title: 'CSA Database – Administrator'};
+  res.render('admin0', content);
+}
+
+function func_add_cust(req, res){
+  content = {title: 'Rubyfruit Farm - Customer'};
+  res.render('admin1', content);
+}
+
+function func_updt_cust(req, res){
+  content = {title: 'Rubyfruit Farm - Customer'};
+  res.render('admin2', content);
+}
+
+function func_cncl_subs(req, res){
+  content = {title: 'Rubyfruit Farm - Customer'};
+  res.render('admin3', content);
+}
+
 
     ////////////
    // errors //
