@@ -1,7 +1,8 @@
 // homeButtonsHandler.js
 
 // this javascript file needs to get session id and compare with permissions to know what links to to make available.
-// There needs to be another check when accessing the page in the nodeBackbone.js to ensure users don't manually navigate to the page, but the check in this file is for UX so they know what they can and can't do.
+// There needs to be another check when accessing the page in the nodeBackbone.js to ensure users don't manually navigate to the page, 
+// but the check in this file is for UX so they know what they can and can't do.
 
 // dom edits will make live links inside buttons
     // see home5.handlebars for example of button turned live link
