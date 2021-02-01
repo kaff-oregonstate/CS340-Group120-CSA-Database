@@ -99,7 +99,7 @@ function funcFarmer(req, res){
 function funcBoxPacker(req, res){
     // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
     content = {title: 'CSA Database – Box Packer'};
-    res.render('boxPacker0', content);
+    res.render('boxPacker', content);
 }
 
 // Amelia's Pages: include pages that manage CSA supporters & Admin
