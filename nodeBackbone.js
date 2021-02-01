@@ -82,7 +82,7 @@ app.get('/csa-supporter-cust', func_cust);
 app.get('/admin', funcAdmin);
 app.get('/admin-add-cust',func_add_cust);
 app.get('/admin-updt-cust',func_updt_cust);
-app.get('/admin-cncl-subs',func_cncl_subs);
+
 
 
 function func1(req, res){
@@ -140,23 +140,23 @@ function func_cust(req,res){
 
 function funcAdmin(req, res){
   content = {title: 'CSA Database – Administrator'};
-  res.render('admin0', content);
+  res.render('admin', content);
 }
 
 function func_add_cust(req, res){
   content = {title: 'Rubyfruit Farm - Customer'};
-  res.render('admin1', content);
+  res.render('admin_add_cust', content);
 }
 
 function func_updt_cust(req, res){
   content = {title: 'Rubyfruit Farm - Customer'};
-  res.render('admin2', content);
+  res.render('admin_update_cust', content);
 }
 
-function func_cncl_subs(req, res){
-  content = {title: 'Rubyfruit Farm - Customer'};
-  res.render('admin3', content);
-}
+
+
+// ***BOX PACKER PAGES***
+
 
 
     ////////////
