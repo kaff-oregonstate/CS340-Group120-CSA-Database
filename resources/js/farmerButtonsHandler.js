@@ -4,16 +4,21 @@
 
 function plantNewRow() {
     console.log('plantNewRow()');
+    app.get('/farmer-plantNewRow', funcFarmerNewPlanting);
+    // funcFarmerNewPlanting();
 }
 
 function harvestNewRow() {
     console.log('harvestNewRow()');
+    funcFarmerNewHarvest();
 }
 
 function viewPlantedRows() {
     console.log('viewPlantedRows()');
+    funcFarmerViewRows();
 }
 
 function viewProduceOnHand() {
     console.log('viewProduceOnHand()');
+    funcFarmerViewRows();
 }
