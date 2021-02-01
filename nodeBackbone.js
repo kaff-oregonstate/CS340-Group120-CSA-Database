@@ -87,7 +87,7 @@ app.get('/admin-updt-cust',func_updt_cust);
 
 function func1(req, res){
     content = {title: 'CSA Database'};
-    res.render('home6', content);
+    res.render('home', content);
 }
 
 function funcFarmer(req, res){
