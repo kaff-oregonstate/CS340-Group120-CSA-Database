@@ -220,9 +220,14 @@ button{
     margin: .3em;
 }
 
-.bg-green{
-    background: #6EAD5C;
+.bg-yellow_green{
+    background-color: #F9FFDF;
 }
+
+.bg-green{
+    background-color: #6EAD5C;
+}
+
 
 .btn-green{
     color:#4e7e41;

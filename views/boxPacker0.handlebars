@@ -1,7 +1,57 @@
 <!-- boxPacker0.handlebars -->
+<nav class="bg-white py-2" id="HomePageHeader">
+    <h1 class="mx-4">Rubyfruit Farm ~ Box Packing</h1>
+</nav>
 
 <div class="container-lg">
-<div id="HomePageHeader">
-    <h1>Box Packer</h1>
+     <div class="card bg-green m-3" style="width: auto;">
+        <div class="card-title m-3">
+            <h3>What goes in this weeks box?</h3>
+        </div>
+        <div class="card-body">
+
+            {{!-- static mock up of a table that might be generated from the amount of veggies harvested in
+            a particular week --}}
+            <div class="table-responsive">
+                <table class="table table-sm table-light">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Crop</th>
+                            <th scope="col">Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Apples</td>
+                            <td>6</td>
+                        </tr>
+                        <tr>
+                            <td>Kale</td>
+                            <td>4</td>
+                        </tr> 
+                        <tr>
+                            <td>Squash</td>
+                            <td>8</td>
+                        </tr>
+                        <tr>
+                            <td>Rhubarb</td>
+                            <td>2</td>
+                        </tr> 
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bg-light-green">
+                {{!-- <p>Number of Boxes to Pack {{boxes}} </p> --}}
+                <p>Number of Boxes to Pack <span class="light-green">43</span> </p>
+
+            </div>
+
+            <button class="btn btn-green" type="submit" onclick="boxes_packed()">Boxes Completed</button>
+
+
+        </div>
+    </div>
 </div>
-</div>
+<script src="/source/js/boxPackerHandler.js" charset="utf-8" id="boxPackerHandler"></script>
