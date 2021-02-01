@@ -2,3 +2,68 @@
 
 <!-- table view that queries database and displays current produce -->
 
+<div class="container" style="text-align: center;">
+    <div class="row justify-content-center">
+        <div class="col col-lg-8">
+<h3 style="text-align: left; font-weight: 600;">Current Produce On Hand:</h3>
+</br>
+
+<div class="form-group row">
+    <label for="sort-by" style="text-align: right;" class="col-sm-8 col-form-label">Sort By:</label>
+    <div class="col-sm-4">
+        <select class="form-control" id="sort-by">
+            <option>-select-</option>
+            <option>Harvest Date</option>
+            <option>Expiration Date</option>
+            <option>Crop Type</option>
+        </select>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <table>
+        <thead>
+            <th>Crop Type:</th>
+            <th>Qty:</th>
+            <th>Harvest Date:</th>
+            <th>Expiration Date:</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Carrots</td>
+                <td>88</td>
+                <td>02/24</td>
+                <td>03/31</td>
+            </tr>
+            <tr>
+                <td>Potatoes</td>
+                <td>264</td>
+                <td>08/04</td>
+                <td>02/08</td>
+            </tr>
+            <tr>
+                <td>Zucchini</td>
+                <td>40</td>
+                <td>03/02</td>
+                <td>03/18</td>
+            </tr>
+            <tr>
+                <td>Arugula</td>
+                <td>99</td>
+                <td>06/15</td>
+                <td>06/21</td>
+            </tr>
+            <tr>
+                <td>Coriander</td>
+                <td>175</td>
+                <td>02/22</td>
+                <td>03/24</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+        </div>
+    </div>
+</div>
+
+<script src="/source/js/farmerButtonsHandler.js" charset="utf-8" id="farmerButtonsHandler"></script>
