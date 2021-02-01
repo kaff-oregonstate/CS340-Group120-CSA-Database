@@ -1,3 +1,35 @@
-<!-- farmer-PlantNewRow.handlebars -->
+<!-- farmer-plantNewRow.handlebars -->
 
 <!-- form to accept new Row planted -->
+
+<div class="container" style="text-align: center;">
+    <div class="row justify-content-center">
+        <div class="col col-lg-8">
+<form class="text-left" action="">
+    <div class="form-row">
+        {{!-- crop type --}}
+        <!-- in the future this will populated using SQL 'SELECT name FROM CropTypes' -->
+        <div class="form-group col-md-6 mb-3" style="width: auto;">
+            <label for="crop-type">Crop Type</label>
+            <select class="form-control" id="crop-type">
+                <option>Carrots</option>
+                <option>Potatoes</option>
+                <option>Zucchini</option>
+                <option>Arugula</option>
+                <option>Coriander</option>
+            </select>
+        </div>
+        {{!-- harvest date --}}
+        <div class="form-group col-md-6 mb-3">
+            <label for="date-to-harvest">Date to Harvest</label>
+            <input class="form-control" type="date" name="date-to-harvest" id="date-to-harvest">
+        </div>
+    </div>
+
+    <button class="btn btn-green" type="submit" onclick="funcFarmerNewPlanting()" >Submit</button>
+</form>
+        </div>
+    </div>
+</div>
+
+<script src="/source/js/farmerButtonsHandler.js" charset="utf-8" id="farmerButtonsHandler"></script>
