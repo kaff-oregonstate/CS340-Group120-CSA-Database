@@ -1,0 +1,56 @@
+<!-- farmer-viewPlantedRows.handlebars -->
+
+<!-- table view that queries database and displays rows planted -->
+
+<div class="container" style="text-align: center;">
+    <div class="row justify-content-center">
+        <div class="col col-lg-8">
+<h3 style="text-align: left; font-weight: 600;">Currently Planted Rows:</h3>
+</br>
+
+<div class="form-group row">
+    <label for="sort-by" style="text-align: right;" class="col-sm-8 col-form-label">Sort By:</label>
+    <div class="col-sm-4">
+        <select class="form-control" id="sort-by">
+            <option>-select-</option>
+            <option>Date to Harvest</option>
+            <option>Crop Type</option>
+        </select>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <table>
+        <thead>
+            <th>Crop Type:</th>
+            <th>Date to Harvest:</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Carrots</td>
+                <td>02/24</td>
+            </tr>
+            <tr>
+                <td>Potatoes</td>
+                <td>08/04</td>
+            </tr>
+            <tr>
+                <td>Zucchini</td>
+                <td>03/02</td>
+            </tr>
+            <tr>
+                <td>Arugula</td>
+                <td>06/15</td>
+            </tr>
+            <tr>
+                <td>Coriander</td>
+                <td>02/22</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+        </div>
+    </div>
+</div>
+
+<script src="/source/js/farmerButtonsHandler.js" charset="utf-8" id="farmerButtonsHandler"></script>

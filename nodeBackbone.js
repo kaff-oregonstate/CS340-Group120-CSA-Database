@@ -68,7 +68,13 @@ app.set('port', port);
 // TODO: use sessions to detect login, direct to either '/login' or '/'
 
 app.get('/', func1);
+
 app.get('/farmer', funcFarmer);
+app.get('/farmer-plantNewRow', funcFarmerNewPlanting);
+app.get('/farmer-harvestNewRow', funcFarmerNewHarvest);
+app.get('/farmer-viewPlantedRows', funcFarmerViewRows);
+app.get('/farmer-viewProduceOnHand', funcFarmerViewProduce);
+
 app.get('/box-packer', funcBoxPacker);
 
 //routes for csa-supporter page and sub-pages (amelia)
@@ -86,19 +92,48 @@ app.get('/admin-updt-cust',func_updt_cust);
 
 
 function func1(req, res){
-    content = {title: 'CSA Database'};
-    res.render('home6', content);
+    content = {title: 'Rubyfruit Farm'};
+    res.render('home', content);
 }
+
+          //////////////////
+         // farmer pages //
+        //////////////////
 
 function funcFarmer(req, res){
     // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
-    content = {title: 'CSA Database – Farmer'};
-    res.render('farmer0', content);
+    content = {title: 'Rubyfruit Farm – Farmer'};
+    res.render('farmer', content);
 }
+
+function funcFarmerNewPlanting(req, res){
+    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
+    content = {title: 'Rubyfruit Farm – Enter Row Planted'};
+    res.render('farmer-plantNewRow', content);
+}
+
+function funcFarmerNewHarvest(req, res){
+    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
+    content = {title: 'Rubyfruit Farm – Enter Row Harvested'};
+    res.render('farmer-harvestNewRow', content);
+}
+
+function funcFarmerViewRows(req, res){
+    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
+    content = {title: 'Rubyfruit Farm – View Rows'};
+    res.render('farmer-viewPlantedRows', content);
+}
+
+function funcFarmerViewProduce(req, res){
+    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
+    content = {title: 'Rubyfruit Farm – View Produce'};
+    res.render('farmer-viewProduceOnHand', content);
+}
+
 
 function funcBoxPacker(req, res){
     // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
-    content = {title: 'CSA Database – Box Packer'};
+    content = {title: 'Rubyfruit Farm – Box Packer'};
     res.render('boxPacker', content);
 }
 
@@ -108,7 +143,7 @@ function funcBoxPacker(req, res){
 
 function funcCsaSupporter(req, res){
   // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
-  content = {title: 'CSA Database – CSA Supporter'};
+  content = {title: 'Rubyfruit Farm – CSA Supporter'};
   res.render('csaSupporter0', content);
 }
 
@@ -139,7 +174,7 @@ function func_cust(req,res){
 // ***ADMIN PAGES***
 
 function funcAdmin(req, res){
-  content = {title: 'CSA Database – Administrator'};
+  content = {title: 'Rubyfruit Farm – Administrator'};
   res.render('admin', content);
 }
 

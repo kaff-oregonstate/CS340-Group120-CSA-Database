@@ -1,0 +1,45 @@
+<!-- farmer-harvestNewRow.handlebars -->
+
+<!-- form to accept new harvested row -->
+
+<div class="container" style="text-align: center;">
+    <div class="row justify-content-center">
+        <div class="col col-lg-8">
+<h3 style="text-align: left; font-weight: 600;">Enter Details for a Newly Harvested Row:</h3>
+</br>
+<form class="text-left" action="">
+    <div class="form-row">
+        {{!-- select row --}}
+        <!-- in the future this will populated using SQL 'SELECT cropType AND harvestDate FROM Rows' -->
+        <div class="form-group col-md-12 mb-3" style="width: auto;">
+            <label for="row-to-harvest">Row Being Harvested</label>
+            <select class="form-control" id="row-to-harvest">
+                <option>Carrots, 02/24</option>
+                <option>Potatoes, 08/04</option>
+                <option>Zucchini, 03/02</option>
+                <option>Arugula, 06/15</option>
+                <option>Coriander, 02/22</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-row">
+        {{!-- quantity harvested --}}
+        <div class="form-group col-md-6 mb-3">
+            <label for="quantity-harvested">Quantity Harvested</label>
+        </br>
+            <input type="number"  id="quantity-harvested" min="1" max="1000">
+        </div>
+        {{!-- expiration date --}}
+        <div class="form-group col-md-6 mb-3">
+            <label for="expire-date">Date produce will Expire</label>
+            <input class="form-control" type="date" name="expire-date" id="expire-date">
+        </div>
+    </div>
+
+    <button class="btn btn-green" type="submit" onclick="funcFarmerNewPlanting()" >Submit</button>
+</form>
+        </div>
+    </div>
+</div>
+
+<script src="/source/js/farmerButtonsHandler.js" charset="utf-8" id="farmerButtonsHandler"></script>
