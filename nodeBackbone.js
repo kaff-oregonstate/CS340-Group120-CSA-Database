@@ -67,31 +67,25 @@ app.set('port', port);
 
 // TODO: use sessions to detect login, direct to either '/login' or '/'
 
-app.get('/', func1);
 
+app.get('/', funcHome);
+
+//routes for farmer and planting pages
 app.get('/farmer', funcFarmer);
 app.get('/farmer-plantNewRow', funcFarmerNewPlanting);
 app.get('/farmer-harvestNewRow', funcFarmerNewHarvest);
 app.get('/farmer-viewPlantedRows', funcFarmerViewRows);
 app.get('/farmer-viewProduceOnHand', funcFarmerViewProduce);
 
+//routes for box packer
 app.get('/box-packer', funcBoxPacker);
-
-//routes for csa-supporter page and sub-pages (amelia)
-app.get('/csa-supporter', funcCsaSupporter);
-app.get('/csa-supporter-next', func_next_box);
-app.get('/csa-supporter-prev', func_prev_box);
-app.get('/csa-supporter-subs', func_subs);
-app.get('/csa-supporter-cust', func_cust);
 
 //routes for admin page and sub-pages
 app.get('/admin', funcAdmin);
 app.get('/admin-add-cust',func_add_cust);
 app.get('/admin-updt-cust',func_updt_cust);
 
-
-
-function func1(req, res){
+function funcHome(req, res){
     content = {title: 'Rubyfruit Farm'};
     res.render('home', content);
 }
@@ -137,39 +131,7 @@ function funcBoxPacker(req, res){
     res.render('boxPacker', content);
 }
 
-// Amelia's Pages: include pages that manage CSA supporters & Admin
-
-// ***CSA SUPPPORTER PAGES***
-
-function funcCsaSupporter(req, res){
-  // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
-  content = {title: 'Rubyfruit Farm – CSA Supporter'};
-  res.render('csaSupporter0', content);
-}
-
-// renders handlebars view to show the user the box items in the next week's CSA box
-function func_next_box(req, res){
-    content = {title: 'Rubyfruit Farm - Boxes'};
-    res.render('csaSupporter1', content);
-}
-
-// renders handlebars view to show the user the box items in the previous week's CSA box
-function func_prev_box(req,res){
-  content = {title: 'Rubyfruit Farm - Boxes'};
-  res.render('csaSupporter2', content);
-}
-
-// renders handlebars view to show the user their subscription information
-function func_subs(req,res){
-  content = {title: 'Rubyfruit Farm - Subscription'};
-  res.render('csaSupporter3', content);
-}
-
-// renders handlebars view to allow the customer to contact customer service
-function func_cust(req,res){
-  content = {title: 'Rubyfruit Farm - Customer Service'};
-  res.render('csaSupporter4', content);
-}
+// Amelia's Pages: include pages that manage box packer & Admin
 
 // ***ADMIN PAGES***
 
