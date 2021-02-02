@@ -76,6 +76,7 @@ app.get('/farmer-plantNewRow', funcFarmerNewPlanting);
 app.get('/farmer-harvestNewRow', funcFarmerNewHarvest);
 app.get('/farmer-viewPlantedRows', funcFarmerViewRows);
 app.get('/farmer-viewProduceOnHand', funcFarmerViewProduce);
+app.get('/farmer-addNewCropType', funcAddNewCropType)
 
 //routes for box packer
 app.get('/box-packer', funcBoxPacker);
@@ -122,6 +123,12 @@ function funcFarmerViewProduce(req, res){
     // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
     content = {title: 'Rubyfruit Farm – View Produce'};
     res.render('farmer-viewProduceOnHand', content);
+}
+
+function funcAddNewCropType(req, res){
+    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
+    content = {title: 'Rubyfruit Farm – Add Crop Type'};
+    res.render('farmer-addNewCropType', content);
 }
 
 
