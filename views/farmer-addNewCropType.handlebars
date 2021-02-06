@@ -2,23 +2,26 @@
 
 <!-- form to accept new Crop Type -->
 
-<div class="container" style="text-align: center;">
-    <div class="row justify-content-center">
-        <div class="col col-lg-8">
-<h3 style="text-align: left; font-weight: 600;">Enter Details for a New Type of Crop:</h3>
-</br>
-<form class="text-left" action="">
-    <div class="row form-group mb-3">
-        {{!-- crop type entry --}}
-        <label for="crop-type">Name of new Crop Type</label>
-        <input type="text" class="form-control" placeholder="Crop Name" name="crop-type">
-    </div>
+<div class="container-lg">
+    <h5 class="mx-4">add new crop type</h5>
 
-    <button class="btn btn-green" type="submit" onclick="funcFarmerNewPlanting()" >Submit</button>
-</form>
+    <div class="card bg-green m-3" style="width: auto;">
+        <div class="card-body">
+
+            <form class="text-left" action="">
+                <div class="row form-group mb-3 mx-2">
+                    {{!-- crop type entry --}}
+                    <label for="crop-type">Enter crop name:</label>
+                    <input type="text" class="form-control" placeholder="Name" name="crop-type">
+                </div>
+
+                <button class="btn btn-green" type="submit" onclick="funcFarmerNewPlanting()">Submit</button>
+            </form>
+
         </div>
     </div>
 </div>
+
 
 <script src="/source/js/farmerButtonsHandler.js" charset="utf-8" id="farmerButtonsHandler"></script>
 
