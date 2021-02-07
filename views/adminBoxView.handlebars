@@ -1,0 +1,71 @@
+<!-- adminBoxView.handlebars -->
+
+<!-- this view needs to implement SELECT and INSERT for Boxes class to fulfill project guidelines -->
+
+<div class="container-lg">
+    <h5 class="mx-4">View a Box</h5>
+
+
+    <div class="card text-center bg-green m-3" style="width: auto;">
+        <div class="card-body">
+
+            <form class="text-left" action="">
+                <div class="form-row">
+                    {{!-- pickup date --}}
+                    <div class="form-group col-md-6 mb-3">
+                        <label for="select-box-date">Find Info for Box Closest To Day:</label>
+                        <input class="form-control" type="date" name="date-to-harvest" id="select-box-date">
+                    </div>
+                </div>
+
+                <button class="btn btn-green" type="submit" onclick="funcFindBox()">Submit</button>
+            </form>
+
+            <br>
+            <!-- some driz here about "box #: #####" and "Pickup Date: ##-##-####" -->
+            <table class="table table-sm table-light">
+                <thead class="thead-light">
+                    <th>Box #:</th>
+                    <th>Pickup Date:</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>43</td>
+                        <td>02/24/2021</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <br>
+    <h5 class="mx-4">Create a New Box</h5>
+
+    <div class="card text-center bg-green m-3" style="width: auto;">
+        {{!-- <img class="card-img-top" src="box_veggies.jpg" alt="photograph of vegetables on a blue background"> --}}
+
+
+
+        <div class="card-body">
+
+            <form class="text-left" action="">
+                <div class="form-row">
+
+                    {{!-- pickup date --}}
+                    <div class="form-group col-md-6 mb-3">
+                        <label for="box-pickup-date">Pickup Date for New Box:</label>
+                        <input class="form-control" type="date" name="date-to-harvest" id="box-pickup-date">
+                    </div>
+                </div>
+
+                <button class="btn btn-green" type="submit" onclick="funcNewBox()">Submit</button>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+
+<script src="/source/js/boxViewButtonsHandler.js" charset="utf-8" id="boxViewButtonsHandler"></script>

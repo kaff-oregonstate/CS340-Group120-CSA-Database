@@ -85,6 +85,7 @@ app.get('/box-packer', funcBoxPacker);
 app.get('/admin', funcAdmin);
 app.get('/admin-add-cust',func_add_cust);
 app.get('/admin-updt-cust',func_updt_cust);
+app.get('/admin-boxes-view',func_boxes_view);
 
 function funcHome(req, res){
     content = {title: 'Rubyfruit Farm'};
@@ -155,6 +156,11 @@ function func_add_cust(req, res){
 function func_updt_cust(req, res){
   content = {title: 'Rubyfruit Farm - Customer'};
   res.render('admin_update_cust', content);
+}
+
+function func_boxes_view(req, res){
+  content = {title: 'Rubyfruit Farm - Boxes'};
+  res.render('adminBoxView', content);
 }
 
 
