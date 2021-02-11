@@ -16,8 +16,8 @@ npm install mysql
 // npm install http-server
 
 
-
-
+npm install forever
+./node_modules/forever/bin/forever
 
 
 
@@ -25,7 +25,7 @@ npm install mysql
 // ipconfig getifaddr en0
 
 
-git clone https://github.com/kaff-oregonstate/cs290_kaffs_hw6.git
+git clone https://github.com/kaff-oregonstate/CS340-Group120-CSA-Database.git
 
 	kaff-oregonstate
 	e6w2JKvmw6gg4zG
