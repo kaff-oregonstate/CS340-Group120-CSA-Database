@@ -19,5 +19,5 @@ CREATE TABLE Boxes_Harvests(
         ON DELETE CASCADE,
     FOREIGN KEY fk_box(box_id)
         REFERENCES Boxes(box_id)
-        ON DELETE CASCADE,
-)
+        ON DELETE CASCADE
+);
