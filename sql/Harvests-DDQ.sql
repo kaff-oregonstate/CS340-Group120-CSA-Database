@@ -1,0 +1,13 @@
+-- Harvests-DDQ.sql
+--
+-- Create a table with the following columns & relationships, named Harvests
+--
+    -- harvest_id: INT, auto_increment, unique, not NULL, PK
+    -- row_id: INT, not NULL, FK
+    -- harvest_date: DATE, not NULL
+    -- expiration_date: DATE, not NULL
+    -- quantity: INT, not NULL
+    -- Relationship: a 1:1 relationship between Rows and Harvests is implemented with row_id as a FK inside of Harvests
+--
+--
+--
