@@ -7,7 +7,7 @@
     -- last_name: VARCHAR, not NULL
     -- date_paid: DATE, not NULL
 --
---CREATE TABLE Customers
+CREATE TABLE Customers
 (
     customer_id INT NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(255) NOT NULL,
