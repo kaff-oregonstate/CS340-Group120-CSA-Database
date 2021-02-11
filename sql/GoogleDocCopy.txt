@@ -1,0 +1,49 @@
+GoogleDocCopy.txt
+
+================================================================================
+
+Crop_types: The types of crops we grow. David
+    crop_id: INT, auto_increment, unique, not NULL, PK
+    crop_name: VARCHAR, not NULL, unique
+
+
+Rows: Growers can enter newly planted Rows of crops. David
+    row_id: INT, auto_increment, unique, not NULL, PK
+    crop_id: VARCHAR, not NULL, FK
+    mature_date: DATE, not NULL
+    Relationship: a 1:M relationship between Crop_types and Rows is implemented with crop_id as a FK inside of Rows
+
+
+Harvests: Used to track what produce is on hand–quantity is deducted when added to Box_Harvests by our algorithm. David
+    harvest_id: INT, auto_increment, unique, not NULL, PK
+    row_id: INT, not NULL, FK
+    harvest_date: DATE, not NULL
+    expiration_date: DATE, not NULL
+    quantity: INT, not NULL
+    Relationship: a 1:1 relationship between Rows and Harvests is implemented with row_id AND crop_id as a FK inside of Harvests
+
+
+Boxes: Each week of the year has a box associated with it. Amelia
+    box_id: INT, PK, auto_increment
+    box_date: DATE, not NULL
+
+
+Boxes_Harvests: An intersection table used to track produce going into each weekly box. David
+    harvest_id: FK, indicates that a harvested crop is in a box (quantity per week generated automatically by algorithm based on quantity and time between harvest_date and expiration_date)
+    box_id: FK, indicates the particular box that a harvest crop will be in
+    Relationship: a 1:M relationship between Boxes_Harvests and Boxes, with box_id as a FK inside Boxes_Harvests
+    Relationship: a 1:M relationship between Boxes_Harvests and Harvests, with harvest_id as a FK inside Boxes_Harvests
+
+
+Customers: Tracks customers and how long they have paid for Boxes. Amelia
+    customer_id: INT, auto_increment, unique, not NULL, PK
+    first_name: VARCHAR, not NULL
+    last_name: VARCHAR, not NULL
+    date_paid: DATE, not NULL
+
+
+Boxes_Customers: An intersection table used to track which customers get which boxes. Amelia
+    box_id: FK
+    customer_id: FK
+    Relationship: a 1:M relationship between Boxes_Customers and Boxes, with box_id as a FK inside Boxes_Customers
+    Relationship: a 1:M relationship between Boxes_Customers and Customers, with customer_id as a FK inside Boxes_Customers

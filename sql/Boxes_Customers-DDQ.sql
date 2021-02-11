@@ -1,0 +1,11 @@
+-- Boxes_Customers-DDQ.sql
+--
+-- Create a table with the following columns & relationships, named Boxes_Customers
+--
+    -- box_id: FK
+    -- customer_id: FK
+    -- Relationship: a 1:M relationship between Boxes_Customers and Boxes, with box_id as a FK inside Boxes_Customers
+    -- Relationship: a 1:M relationship between Boxes_Customers and Customers, with customer_id as a FK inside Boxes_Customers
+--
+--
+--
