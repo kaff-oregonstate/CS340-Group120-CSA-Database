@@ -11,7 +11,7 @@
 --
 
 CREATE TABLE Rows(
-    row_id INT AUTO_INCREMENT,
+    row_id INT NOT NULL AUTO_INCREMENT,
     crop_id INT,
     mature_date DATE NOT NULL,
     PRIMARY KEY (row_id),
@@ -19,4 +19,4 @@ CREATE TABLE Rows(
         REFERENCES Crop_Types(crop_id)
         ON DELETE SET NULL
         -- ON UPDATE CASCADE -- ??
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
