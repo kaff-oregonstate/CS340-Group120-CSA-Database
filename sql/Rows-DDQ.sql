@@ -10,4 +10,13 @@
 --
 --
 
-
+CREATE TABLE Rows(
+    row_id INT AUTO_INCREMENT,
+    crop_id INT,
+    mature_date DATE NOT NULL,
+    PRIMARY KEY (row_id),
+    FOREIGN KEY fk_crop(crop_id)
+        REFERENCES Crop_Types(crop_id)
+        ON DELETE SET NULL
+        -- ON UPDATE CASCADE -- ??
+);
