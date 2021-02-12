@@ -13,7 +13,7 @@
 --
 
 CREATE TABLE Harvests(
-    harvest_id INT AUTO_INCREMENT,
+    harvest_id INT NOT NULL AUTO_INCREMENT,
     row_id INT,
     harvest_date DATE NOT NULL,
     expiration_date DATE NOT NULL,
@@ -23,5 +23,5 @@ CREATE TABLE Harvests(
     FOREIGN KEY fk_crop(row_id)
         REFERENCES Rows(row_id)
         ON DELETE SET NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

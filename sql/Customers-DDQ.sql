@@ -12,9 +12,9 @@ CREATE TABLE Customers
     customer_id INT NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
-    date_paid DATE NOT NULL, 
+    date_paid DATE NOT NULL,
     PRIMARY KEY (customer_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 --
 
 
