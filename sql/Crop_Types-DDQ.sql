@@ -13,3 +13,13 @@ CREATE TABLE Crop_Types(
     crop_name VARCHAR(255) NOT NULL UNIQUE,
     PRIMARY KEY (crop_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO Crop_Types
+(crop_name)
+VALUES('Carrots');
+INSERT INTO Crop_Types
+(crop_name)
+VALUES('Potatoes');
+INSERT INTO Crop_Types
+(crop_name)
+VALUES('Asparagus');
