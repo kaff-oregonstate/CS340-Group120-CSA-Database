@@ -17,4 +17,7 @@ CREATE TABLE Customers
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 --
 
+-- INSERT INTO Customers
+--     (first_name, last_name, date_paid)
+-- VALUES(?,?,?);
 
