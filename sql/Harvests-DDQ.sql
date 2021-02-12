@@ -11,3 +11,17 @@
 --
 --
 --
+
+CREATE TABLE Harvests(
+    harvest_id INT AUTO_INCREMENT,
+    row_id INT,
+    harvest_date DATE NOT NULL,
+    expiration_date DATE NOT NULL,
+    quantity INT NOT NULL,
+    -- units VARCHAR(255), -- where none is assumed whole produce but "baskets" or "kg" can be informative, for say berries or quinoa
+    PRIMARY KEY (harvest_id),
+    FOREIGN KEY fk_crop(row_id)
+        REFERENCES Rows(row_id)
+        ON DELETE SET NULL
+);
+
