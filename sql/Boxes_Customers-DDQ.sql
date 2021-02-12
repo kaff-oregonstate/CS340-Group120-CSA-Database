@@ -13,12 +13,12 @@
 CREATE TABLE Boxes_Customers(
     box_id INT NOT NULL,
     customer_id INT NOT NULL,
-    FOREIGN KEY fk_box(box_id) 
+    FOREIGN KEY fk_box(box_id)
         REFERENCES Boxes(box_id)
         ON DELETE CASCADE,
-    FOREIGN KEY fk_customer(customer_id) 
+    FOREIGN KEY fk_customer(customer_id)
         REFERENCES Customers(customer_id)
         ON DELETE CASCADE,
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 

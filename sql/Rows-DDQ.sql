@@ -10,4 +10,27 @@
 --
 --
 
+CREATE TABLE Rows(
+    row_id INT NOT NULL AUTO_INCREMENT,
+    crop_id INT,
+    mature_date DATE NOT NULL,
+    PRIMARY KEY (row_id),
+    FOREIGN KEY fk_crop(crop_id)
+        REFERENCES Crop_Types(crop_id)
+        ON DELETE SET NULL
+        -- ON UPDATE CASCADE -- ??
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- not sure if this works or not
+INSERT INTO Rows
+(mature_date, crop_id)
+VALUES('2021-04-05', (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Carrots'));
+
+INSERT INTO Rows
+(mature_date, crop_id)
+VALUES('2021-03-22', (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Potatoes'));
+
+INSERT INTO Rows
+(mature_date, crop_id)
+VALUES('2021-05-01', (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Asparagus'));
 
