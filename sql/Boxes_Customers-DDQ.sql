@@ -18,7 +18,20 @@ CREATE TABLE Boxes_Customers(
         ON DELETE CASCADE,
     FOREIGN KEY fk_customer(customer_id) 
         REFERENCES Customers(customer_id)
-        ON DELETE CASCADE,
-);
+        ON DELETE CASCADE
+)ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+
+
+INSERT INTO Boxes_Customers
+    (box_id,customer_id)
+VALUES
+    ((SELECT box_id FROM Boxes WHERE box_date = '2020-07-12'), 1 ),
+    ((SELECT box_id FROM Boxes WHERE box_date = '2020-07-12'), 2 ),
+    ((SELECT box_id FROM Boxes WHERE box_date = '2020-07-12'), 3 ),
+    ((SELECT box_id FROM Boxes WHERE box_date = '2020-07-12'), 5 ),
+    ((SELECT box_id FROM Boxes WHERE box_date = '2020-07-12'), 6 ),
+    ((SELECT box_id FROM Boxes WHERE box_date = '2020-07-12'), 7 ),
+    ((SELECT box_id FROM Boxes WHERE box_date = '2020-07-12'), 8 ),
+    ((SELECT box_id FROM Boxes WHERE box_date = '2020-07-12'), 9 );
 

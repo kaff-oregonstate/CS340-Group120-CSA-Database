@@ -20,4 +20,5 @@ CREATE TABLE Boxes_Harvests(
     FOREIGN KEY fk_box(box_id)
         REFERENCES Boxes(box_id)
         ON DELETE CASCADE
-);
+)ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
