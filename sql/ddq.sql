@@ -176,6 +176,6 @@ VALUES('2021-04-05', '2021-05-22', (SELECT row_id FROM Crop_Rows WHERE mature_da
 
 INSERT INTO Boxes_Harvests
 (box_id, harvest_id)
-VALUES((SELECT box_id FROM Boxes WHERE box_date = '2020-07-12'), (SELECT harvest_id FROM Harvests WHERE row_id = (SELECT row_id FROM Rows WHERE mature_date = '2021-03-22' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Potatoes'))) ),
-    ((SELECT box_id FROM Boxes WHERE box_date = '2020-07-12'), (SELECT harvest_id FROM Harvests WHERE row_id = (SELECT row_id FROM Rows WHERE mature_date = '2021-03-22' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Potatoes'))) ),
-    ((SELECT box_id FROM Boxes WHERE box_date = '2020-07-12'), (SELECT harvest_id FROM Harvests WHERE row_id = (SELECT row_id FROM Rows WHERE mature_date = '2021-05-01' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Asparagus'))) );
+VALUES((SELECT box_id FROM Boxes WHERE box_date = '2020-07-12'), (SELECT harvest_id FROM Harvests WHERE row_id = (SELECT row_id FROM Crop_Rows WHERE mature_date = '2021-03-22' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Potatoes'))) ),
+    ((SELECT box_id FROM Boxes WHERE box_date = '2020-07-12'), (SELECT harvest_id FROM Harvests WHERE row_id = (SELECT row_id FROM Crop_Rows WHERE mature_date = '2021-04-05' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Carrots'))) ),
+    ((SELECT box_id FROM Boxes WHERE box_date = '2020-07-12'), (SELECT harvest_id FROM Harvests WHERE row_id = (SELECT row_id FROM Crop_Rows WHERE mature_date = '2021-05-01' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Asparagus'))) );
