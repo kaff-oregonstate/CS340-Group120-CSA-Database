@@ -39,6 +39,11 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
+// magic from Millie
+const CORS = require('cors');
+app.use(CORS());
+
+
 // const session = require('express-session');
 // app.use(session({secret: 'verySecretPassword'}));
 
@@ -93,7 +98,7 @@ function funcHome(req, res){
 }
 
           //////////////////
-         // farmer pages //
+//=======// farmer pages //================================//
         //////////////////
 
 function funcFarmer(req, res){
@@ -105,7 +110,18 @@ function funcFarmer(req, res){
 function funcFarmerNewPlanting(req, res){
     // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
     content = {title: 'Rubyfruit Farm – Enter Row Planted'};
-    res.render('farmer-plantNewRow', content);
+    // get the crop type names before rendering
+    pool.query(
+        getCropNamesQuery,
+        function(err, result){
+            // on return, push results into content and render farmer-plantNewRow
+            content.crop_types = result;
+            for (i in content.crop_types) {
+                console.log(content.crop_types[i].crop_name + " " + content.crop_types[i].crop_id);
+            }
+            res.render('farmer-plantNewRow', content);
+        }
+    )
 }
 
 function funcFarmerNewHarvest(req, res){
@@ -132,6 +148,9 @@ function funcAddNewCropType(req, res){
     res.render('farmer-addNewCropType', content);
 }
 
+          /////////////////////
+//=======// box packer page //================================//
+        /////////////////////
 
 function funcBoxPacker(req, res){
     // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
@@ -165,7 +184,19 @@ function func_boxes_view(req, res){
 
 
 
-// ***BOX PACKER PAGES***
+          /////////////////
+//=======// SQL Queries //================================//
+        /////////////////
+
+const getCropNamesQuery = 'SELECT crop_name, crop_id FROM Crop_Types;';
+const addCropRowQuery = "INSERT INTO Crop_Rows (`crop_id`, `mature_date`) VALUES (?, ?);";
+
+
+
+          /////////////////////////////
+//=======// Database AJAX Functions //================================//
+        /////////////////////////////
+
 
 
 

@@ -14,11 +14,9 @@
                     <div class="form-group col-md-6 mb-3" style="width: auto;">
                         <label for="crop-type">Crop Type</label>
                         <select class="form-control" id="crop-type">
-                            <option>Carrots</option>
-                            <option>Potatoes</option>
-                            <option>Zucchini</option>
-                            <option>Arugula</option>
-                            <option>Coriander</option>
+                            {{#each crop_types}}
+                            <option value="{{this.crop_id}}">{{this.crop_name}}</option>
+                            {{/each}}
                         </select>
                     </div>
                     {{!-- harvest date --}}
