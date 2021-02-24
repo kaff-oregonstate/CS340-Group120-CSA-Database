@@ -90,7 +90,8 @@ app.get('/admin-updt-cust',func_updt_cust);
 app.get('/admin-boxes-view',func_boxes_view);
 
 function funcHome(req, res){
-    content = {title: 'Rubyfruit Farm'};
+    content = {
+title: 'Rubyfruit Farm', page_name: 'home'};
     res.render('home', content);
 }
 
@@ -99,12 +100,25 @@ function funcHome(req, res){
         //////////////////
 
 function funcFarmer(req, res){
-    content = {title: 'Rubyfruit Farm – Farmer'};
+    content = {
+        title: 'Rubyfruit Farm – Farmer',
+        page_name: 'farmer',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'}
+        ]
+    };
     res.render('farmer', content);
 }
 
 function func_farmer_new_crop_rows(req, res){
-    content = {title: 'Rubyfruit Farm – Enter Row Planted'};
+    content = {
+        title: 'Rubyfruit Farm – Track Newly Planted Row',
+        page_name: 'plant new row',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'},
+            {link: '/farmer', page_name: 'farmer'}
+        ]
+    };
     // get the crop type names before rendering
     pool.query(
         get_crop_types_query,
@@ -119,12 +133,26 @@ function func_farmer_new_crop_rows(req, res){
 }
 
 function funcFarmerNewHarvest(req, res){
-    content = {title: 'Rubyfruit Farm – Enter Row Harvested'};
+    content = {
+        title: 'Rubyfruit Farm – Enter Row Harvested',
+        page_name: 'harvest new row',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'},
+            {link: '/farmer', page_name: 'farmer'}
+        ]
+    };
     res.render('farmer-harvestNewRow', content);
 }
 
 function func_farmer_view_rows(req, res){
-    content = {title: 'Rubyfruit Farm – View Rows'};
+    content = {
+        title: 'Rubyfruit Farm – View Rows',
+        page_name: 'view planted rows',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'},
+            {link: '/farmer', page_name: 'farmer'}
+        ]
+    };
     // get the crop type names before rendering
     pool.query(
         get_crop_rows_query,
@@ -146,12 +174,26 @@ function func_farmer_view_rows(req, res){
 }
 
 function funcFarmerViewProduce(req, res){
-    content = {title: 'Rubyfruit Farm – View Produce'};
+    content = {
+        title: 'Rubyfruit Farm – View Produce',
+        page_name: 'view produce on hand',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'},
+            {link: '/farmer', page_name: 'farmer'}
+        ]
+    };
     res.render('farmer-viewProduceOnHand', content);
 }
 
 function funcAddNewCropType(req, res){
-    content = {title: 'Rubyfruit Farm – Add Crop Type'};
+    content = {
+        title: 'Rubyfruit Farm – Add Crop Type',
+        page_name: 'add new crop type',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'},
+            {link: '/farmer', page_name: 'farmer'}
+        ]
+    };
     res.render('farmer-addNewCropType', content);
 }
 
@@ -160,7 +202,13 @@ function funcAddNewCropType(req, res){
         /////////////////////
 
 function funcBoxPacker(req, res){
-    content = {title: 'Rubyfruit Farm – Box Packer'};
+    content = {
+        title: 'Rubyfruit Farm – Box Packer',
+        page_name: 'box packer',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'}
+        ]
+    };
     res.render('boxPacker', content);
 }
 
@@ -169,22 +217,49 @@ function funcBoxPacker(req, res){
 // ***ADMIN PAGES***
 
 function funcAdmin(req, res){
-  content = {title: 'Rubyfruit Farm – Administrator'};
+  content = {
+    title: 'Rubyfruit Farm – Administrator',
+    page_name: 'admin',
+    breadcrumbs: [
+        {link: '/', page_name: 'home'}
+    ]
+  };
   res.render('admin', content);
 }
 
 function func_add_cust(req, res){
-  content = {title: 'Rubyfruit Farm - Customer'};
+  content = {
+    title: 'Rubyfruit Farm - Customer',
+    page_name: 'add new customer',
+    breadcrumbs: [
+        {link: '/', page_name: 'home'},
+        {link: '/admin', page_name: 'admin'}
+    ]
+  };
   res.render('admin_add_cust', content);
 }
 
 function func_updt_cust(req, res){
-  content = {title: 'Rubyfruit Farm - Customer'};
+  content = {
+    title: 'Rubyfruit Farm - Customer',
+    page_name: 'update customer subscription',
+    breadcrumbs: [
+        {link: '/', page_name: 'home'},
+        {link: '/admin', page_name: 'admin'}
+    ]
+  };
   res.render('admin_update_cust', content);
 }
 
 function func_boxes_view(req, res){
-  content = {title: 'Rubyfruit Farm - Boxes'};
+  content = {
+    title: 'Rubyfruit Farm - Boxes',
+    page_name: 'view and add boxes',
+    breadcrumbs: [
+        {link: '/', page_name: 'home'},
+        {link: '/admin', page_name: 'admin'}
+    ]
+  };
   res.render('adminBoxView', content);
 }
 
