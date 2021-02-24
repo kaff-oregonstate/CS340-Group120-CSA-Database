@@ -39,6 +39,11 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
+// magic from Millie
+const CORS = require('cors');
+app.use(CORS());
+
+
 // const session = require('express-session');
 // app.use(session({secret: 'verySecretPassword'}));
 
@@ -65,16 +70,13 @@ app.set('port', port);
    // content //
   /////////////
 
-// TODO: use sessions to detect login, direct to either '/login' or '/'
-
-
 app.get('/', funcHome);
 
 //routes for farmer and planting pages
 app.get('/farmer', funcFarmer);
-app.get('/farmer-plantNewRow', funcFarmerNewPlanting);
+app.get('/farmer-plant-new-row', func_farmer_new_crop_rows);
 app.get('/farmer-harvestNewRow', funcFarmerNewHarvest);
-app.get('/farmer-viewPlantedRows', funcFarmerViewRows);
+app.get('/farmer-view-planted-rows', func_farmer_view_rows);
 app.get('/farmer-viewProduceOnHand', funcFarmerViewProduce);
 app.get('/farmer-addNewCropType', funcAddNewCropType)
 
@@ -93,48 +95,71 @@ function funcHome(req, res){
 }
 
           //////////////////
-         // farmer pages //
+//=======// farmer pages //================================//
         //////////////////
 
 function funcFarmer(req, res){
-    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
     content = {title: 'Rubyfruit Farm – Farmer'};
     res.render('farmer', content);
 }
 
-function funcFarmerNewPlanting(req, res){
-    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
+function func_farmer_new_crop_rows(req, res){
     content = {title: 'Rubyfruit Farm – Enter Row Planted'};
-    res.render('farmer-plantNewRow', content);
+    // get the crop type names before rendering
+    pool.query(
+        get_crop_types_query,
+        function(err, result){
+            // on return:
+                // push results into content
+                // render farmer-plant-new-row
+            content.crop_types = result;
+            res.render('farmer-plant-new-row', content);
+        }
+    )
 }
 
 function funcFarmerNewHarvest(req, res){
-    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
     content = {title: 'Rubyfruit Farm – Enter Row Harvested'};
     res.render('farmer-harvestNewRow', content);
 }
 
-function funcFarmerViewRows(req, res){
-    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
+function func_farmer_view_rows(req, res){
     content = {title: 'Rubyfruit Farm – View Rows'};
-    res.render('farmer-viewPlantedRows', content);
+    // get the crop type names before rendering
+    pool.query(
+        get_crop_rows_query,
+        function(err, result){
+            // on return:
+                // push results into content
+                // convert the dates to DateStrings for js
+                // render farmer-view-planted-rows
+            content.crop_rows = result;
+                    // for (r in content.crop_rows) {
+                    //     console.log(content.crop_rows[r]);
+                    // }
+            for (i in content.crop_rows) {
+                content.crop_rows[i].mature_date = new Date(content.crop_rows[i].mature_date).toDateString()
+            }
+            res.render('farmer-view-planted-rows', content);
+        }
+    )
 }
 
 function funcFarmerViewProduce(req, res){
-    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
     content = {title: 'Rubyfruit Farm – View Produce'};
     res.render('farmer-viewProduceOnHand', content);
 }
 
 function funcAddNewCropType(req, res){
-    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
     content = {title: 'Rubyfruit Farm – Add Crop Type'};
     res.render('farmer-addNewCropType', content);
 }
 
+          /////////////////////
+//=======// box packer page //================================//
+        /////////////////////
 
 function funcBoxPacker(req, res){
-    // need check for permissions to load this page, else maybe display home page again with error message at bottom/top?
     content = {title: 'Rubyfruit Farm – Box Packer'};
     res.render('boxPacker', content);
 }
@@ -165,8 +190,41 @@ function func_boxes_view(req, res){
 
 
 
-// ***BOX PACKER PAGES***
+          /////////////////
+//=======// SQL Queries //================================//
+        /////////////////
 
+const get_crop_types_query = 'SELECT crop_name, crop_id FROM Crop_Types;';
+const add_crop_row_query = "INSERT INTO Crop_Rows (`crop_id`, `mature_date`) VALUES (?, ?);";
+const get_crop_rows_query = 'SELECT row_id, Crop_Rows.crop_id, mature_date, crop_name FROM Crop_Rows LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
+
+
+
+          /////////////////////////////
+//=======// Database AJAX Functions //================================//
+        /////////////////////////////
+
+app.post('/INSERT-crop-rows', func_INSERT_crop_rows);
+function func_INSERT_crop_rows(req, res, next) {
+    var {crop_id, mature_date} = req.body;
+    pool.query(
+        add_crop_row_query,
+        [crop_id, mature_date],
+        function(err, result){
+            if(err){
+                res.type('text/plain');
+                res.status(401);
+                res.send('401 - bad INSERT');
+              console.log(err);
+              return;
+            }
+            // on return, send good response back
+            res.type('text/plain');
+            res.status(200);
+            res.send('200 - good INSERT');
+        }
+    )
+}
 
 
     ////////////
