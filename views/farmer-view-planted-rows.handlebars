@@ -1,4 +1,4 @@
-<!-- farmer-viewPlantedRows.handlebars -->
+<!-- farmer-view-planted-rows.handlebars -->
 
 <!-- table view that queries database and displays rows planted -->
 
@@ -51,6 +51,14 @@
                             <td>Coriander</td>
                             <td>02/22</td>
                         </tr>
+                        {{#each crop_rows}}
+                        <tr>
+                            <td hidden name="row_id">{{this.row_id}}</td>
+                            <td hidden name="crop_id">{{this.crop_id}}</td>
+                            <td name="crop_name">{{this.crop_name}}</td>
+                            <td name="mature_date">{{this.mature_date}}</td>
+                        </tr>
+                        {{/each}}
                     </tbody>
                 </table>
             </div>
