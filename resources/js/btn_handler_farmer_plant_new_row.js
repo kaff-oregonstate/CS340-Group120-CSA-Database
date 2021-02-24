@@ -45,17 +45,21 @@ function func_INSERT_crop_rows() {
         if(envelope.status >=200 && envelope.status < 400){
             // reload page
             console.log('good return!');
+            remove_notification('sending_request');
+            notify_user('good_return', "Request processed successfully!")
             wait_to_reload();
 
         } else {
             // log request error
             console.log("Error in network request: " + envelope.statusText)
             enable_button(submit_button);
+            remove_notification('sending_request');
             notify_user('err_in_last_request', "Last Request failed in network, please try again.")
             return
         }
     });
     envelope.send(JSON.stringify(new_row));
+    notify_user('sending_request', "Sending Request, please wait...");
 
 }
 

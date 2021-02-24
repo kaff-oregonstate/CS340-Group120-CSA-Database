@@ -131,11 +131,12 @@ function func_farmer_view_rows(req, res){
         function(err, result){
             // on return:
                 // push results into content
+                // convert the dates to DateStrings for js
                 // render farmer-view-planted-rows
             content.crop_rows = result;
-            for (r in content.crop_rows) {
-                console.log(content.crop_rows[r]);
-            }
+                    // for (r in content.crop_rows) {
+                    //     console.log(content.crop_rows[r]);
+                    // }
             for (i in content.crop_rows) {
                 content.crop_rows[i].mature_date = new Date(content.crop_rows[i].mature_date).toDateString()
             }
@@ -202,33 +203,27 @@ const get_crop_rows_query = 'SELECT row_id, Crop_Rows.crop_id, mature_date, crop
           /////////////////////////////
 //=======// Database AJAX Functions //================================//
         /////////////////////////////
+
 app.post('/INSERT-crop-rows', func_INSERT_crop_rows);
 function func_INSERT_crop_rows(req, res, next) {
-    // on return, send good response back
     var {crop_id, mature_date} = req.body;
-    console.log('crop_id = ');
-    res.type('text/plain');
-    res.status(200);
-    res.send('200 - good INSERT');
-
-    // var {crop_id, mature_date} = req.body;
-    // pool.query(
-    //     add_crop_row_query,
-    //     [crop_id, mature_date],
-    //     function(err, result){
-    //         if(err){
-    //             res.type('text/plain');
-    //             res.status(401);
-    //             res.send('401 - bad INSERT');
-    //           console.log(err);
-    //           return;
-    //         }
-    //         // on return, send good response back
-    //         res.type('text/plain');
-    //         res.status(200);
-    //         res.send('200 - good INSERT');
-    //     }
-    // )
+    pool.query(
+        add_crop_row_query,
+        [crop_id, mature_date],
+        function(err, result){
+            if(err){
+                res.type('text/plain');
+                res.status(401);
+                res.send('401 - bad INSERT');
+              console.log(err);
+              return;
+            }
+            // on return, send good response back
+            res.type('text/plain');
+            res.status(200);
+            res.send('200 - good INSERT');
+        }
+    )
 }
 
 
