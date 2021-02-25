@@ -61,10 +61,11 @@ const getData = async () => {
             // var customer_rows = xhr.response;
             // console.log(customer_rows);
         }
+        console.log('ERROR IN GET DATA');
     };
 
     //prepare request using open(http method, url of page, boolean value for async)
-    xhr.open('GET', baseUrl + 'admin-add-cust', true);
+    xhr.open('GET', baseUrl + 'admin-add-customer', true);
     xhr.send(null);
 
 };
@@ -127,6 +128,7 @@ function isFull(obj){
     console.log("returning true");
     return true;
 }
+
 
 
 // enableButton('#submit-customer');

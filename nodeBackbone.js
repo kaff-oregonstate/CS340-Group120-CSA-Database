@@ -85,8 +85,8 @@ app.get('/box-packer', funcBoxPacker);
 
 //routes for admin page and sub-pages
 app.get('/admin', funcAdmin);
-app.get('/admin-add-cust',func_add_cust);
-app.get('/admin-updt-cust',func_updt_cust);
+app.get('/admin-add-customer',func_add_customer);
+app.get('/admin-update-customer',func_update_customer);
 app.get('/admin-boxes-view',func_boxes_view);
 
 function funcHome(req, res){
@@ -261,12 +261,18 @@ function funcAdmin(req, res){
   res.render('admin', content);
 }
 
-<<<<<<< HEAD
-function func_add_cust(req, res, next){
+function func_add_customer(req, res, next){
   console.log("ADD customer ROUTE....")
 
   //add title to page content
-  content = {title: 'Rubyfruit Farm - Customer'};
+  content = {
+    title: 'Rubyfruit Farm - Customer',
+    page_name: 'add new customer',
+    breadcrumbs: [
+        {link: '/', page_name: 'home'},
+        {link: '/admin', page_name: 'admin'}
+    ]
+  };
  
   //query the server for the data in customers table, store in rows
   pool.query(get_all_customers, (err, rows) =>{
@@ -284,35 +290,24 @@ function func_add_cust(req, res, next){
     content.customers = rows;
 
     //render the page with the content from the server
-    res.render('admin_add_cust', content);
+    res.render('admin-add-customer', content);
     console.log("ADD customer ROUTE.... (3)");
 
   });
 
-=======
-function func_add_cust(req, res){
-  content = {
-    title: 'Rubyfruit Farm - Customer',
-    page_name: 'add new customer',
-    breadcrumbs: [
-        {link: '/', page_name: 'home'},
-        {link: '/admin', page_name: 'admin'}
-    ]
-  };
-  res.render('admin_add_cust', content);
->>>>>>> 53515579d6f5569e4da9e006b698416570828699
 }
 
-function func_updt_cust(req, res){
+function func_update_customer(req,res){
   content = {
-    title: 'Rubyfruit Farm - Customer',
-    page_name: 'update customer subscription',
-    breadcrumbs: [
-        {link: '/', page_name: 'home'},
-        {link: '/admin', page_name: 'admin'}
+    title: "Rubyfruit Farm - Update Customer",
+    page_name: "update customer",
+    breadcrumbs:[
+      {link: '/', page_name: 'home'},
+      {link: '/admin', page_name: 'admin'}
     ]
   };
-  res.render('admin_update_cust', content);
+  console.log("in update customer");
+  res.render('admin-update-customer', content);
 }
 
 function func_boxes_view(req, res){
@@ -324,7 +319,7 @@ function func_boxes_view(req, res){
         {link: '/admin', page_name: 'admin'}
     ]
   };
-  res.render('adminBoxView', content);
+  res.render('admin-boxes-view', content);
 }
 
 
@@ -374,7 +369,6 @@ function func_INSERT_crop_rows(req, res, next) {
     )
 }
 
-<<<<<<< HEAD
 app.post('/INSERT-customer', function(req, res, next){
 
   console.log("in INSERT CUSTOMER route ...");
@@ -395,7 +389,7 @@ app.post('/INSERT-customer', function(req, res, next){
   });
   console.log("outside query in insert customer");
 });
-=======
+
 app.post('/INSERT-harvests', func_INSERT_harvests);
 function func_INSERT_harvests(req, res, next) {
     var {row_id, quantity, harvest_date, expiration_date} = req.body;
@@ -440,7 +434,6 @@ function func_INSERT_crop_types(req, res, next) {
         }
     )
 }
->>>>>>> 53515579d6f5569e4da9e006b698416570828699
 
     ////////////
    // errors //
