@@ -75,10 +75,10 @@ app.get('/', funcHome);
 //routes for farmer and planting pages
 app.get('/farmer', funcFarmer);
 app.get('/farmer-plant-new-row', func_farmer_new_crop_rows);
-app.get('/farmer-harvestNewRow', funcFarmerNewHarvest);
+app.get('/farmer-harvest-new-row', func_farmer_new_harvest);
 app.get('/farmer-view-planted-rows', func_farmer_view_rows);
-app.get('/farmer-viewProduceOnHand', funcFarmerViewProduce);
-app.get('/farmer-addNewCropType', funcAddNewCropType)
+app.get('/farmer-view-produce-on-hand', func_farmer_view_produce);
+app.get('/farmer-add-new-crop-type', func_add_new_crop_type)
 
 //routes for box packer
 app.get('/box-packer', funcBoxPacker);
@@ -90,7 +90,10 @@ app.get('/admin-updt-cust',func_updt_cust);
 app.get('/admin-boxes-view',func_boxes_view);
 
 function funcHome(req, res){
-    content = {title: 'Rubyfruit Farm'};
+    content = {
+        title: 'Rubyfruit Farm',
+        page_name: 'home'
+    };
     res.render('home', content);
 }
 
@@ -99,12 +102,25 @@ function funcHome(req, res){
         //////////////////
 
 function funcFarmer(req, res){
-    content = {title: 'Rubyfruit Farm – Farmer'};
+    content = {
+        title: 'Rubyfruit Farm – Farmer',
+        page_name: 'farmer',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'}
+        ]
+    };
     res.render('farmer', content);
 }
 
 function func_farmer_new_crop_rows(req, res){
-    content = {title: 'Rubyfruit Farm – Enter Row Planted'};
+    content = {
+        title: 'Rubyfruit Farm – Track Newly Planted Row',
+        page_name: 'plant new row',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'},
+            {link: '/farmer', page_name: 'farmer'}
+        ]
+    };
     // get the crop type names before rendering
     pool.query(
         get_crop_types_query,
@@ -118,14 +134,39 @@ function func_farmer_new_crop_rows(req, res){
     )
 }
 
-function funcFarmerNewHarvest(req, res){
-    content = {title: 'Rubyfruit Farm – Enter Row Harvested'};
-    res.render('farmer-harvestNewRow', content);
+function func_farmer_new_harvest(req, res){
+    content = {
+        title: 'Rubyfruit Farm – Enter Row Harvested',
+        page_name: 'harvest new row',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'},
+            {link: '/farmer', page_name: 'farmer'}
+        ]
+    };
+    // get the crop rows before rendering
+    pool.query(
+        get_crop_rows_query,
+        function(err, result){
+            content.crop_rows = result;
+            for (i in content.crop_rows) {
+                var date = new Date(content.crop_rows[i].mature_date);
+                content.crop_rows[i].mature_date = Intl.DateTimeFormat('en-US').format(date);
+            }
+            res.render('farmer-harvest-new-row', content);
+        }
+    )
 }
 
 function func_farmer_view_rows(req, res){
-    content = {title: 'Rubyfruit Farm – View Rows'};
-    // get the crop type names before rendering
+    content = {
+        title: 'Rubyfruit Farm – View Rows',
+        page_name: 'view planted rows',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'},
+            {link: '/farmer', page_name: 'farmer'}
+        ]
+    };
+    // get the crop rows before rendering
     pool.query(
         get_crop_rows_query,
         function(err, result){
@@ -138,21 +179,56 @@ function func_farmer_view_rows(req, res){
                     //     console.log(content.crop_rows[r]);
                     // }
             for (i in content.crop_rows) {
-                content.crop_rows[i].mature_date = new Date(content.crop_rows[i].mature_date).toDateString()
+                var date = new Date(content.crop_rows[i].mature_date);
+                content.crop_rows[i].mature_date = Intl.DateTimeFormat('en-US').format(date);
             }
             res.render('farmer-view-planted-rows', content);
         }
     )
 }
 
-function funcFarmerViewProduce(req, res){
-    content = {title: 'Rubyfruit Farm – View Produce'};
-    res.render('farmer-viewProduceOnHand', content);
+function func_farmer_view_produce(req, res){
+    content = {
+        title: 'Rubyfruit Farm – View Produce',
+        page_name: 'view produce on hand',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'},
+            {link: '/farmer', page_name: 'farmer'}
+        ]
+    };
+    // get the harvests before rendering
+    pool.query(
+        get_harvests_query,
+        function(err, result){
+            // on return:
+                // push results into content
+                // convert the dates to DateStrings for js
+                // render farmer-view-planted-rows
+            content.harvests = result;
+                    // for (r in content.crop_rows) {
+                    //     console.log(content.crop_rows[r]);
+                    // }
+            for (i in content.harvests) {
+                var date1 = new Date(content.harvests[i].harvest_date);
+                content.harvests[i].harvest_date = Intl.DateTimeFormat('en-US').format(date1);
+                var date2 = new Date(content.harvests[i].expiration_date);
+                content.harvests[i].expiration_date = Intl.DateTimeFormat('en-US').format(date2);
+            }
+            res.render('farmer-view-produce-on-hand', content);
+        }
+    )
 }
 
-function funcAddNewCropType(req, res){
-    content = {title: 'Rubyfruit Farm – Add Crop Type'};
-    res.render('farmer-addNewCropType', content);
+function func_add_new_crop_type(req, res){
+    content = {
+        title: 'Rubyfruit Farm – Add Crop Type',
+        page_name: 'add new crop type',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'},
+            {link: '/farmer', page_name: 'farmer'}
+        ]
+    };
+    res.render('farmer-add-new-crop-type', content);
 }
 
           /////////////////////
@@ -160,7 +236,13 @@ function funcAddNewCropType(req, res){
         /////////////////////
 
 function funcBoxPacker(req, res){
-    content = {title: 'Rubyfruit Farm – Box Packer'};
+    content = {
+        title: 'Rubyfruit Farm – Box Packer',
+        page_name: 'box packer',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'}
+        ]
+    };
     res.render('boxPacker', content);
 }
 
@@ -169,22 +251,49 @@ function funcBoxPacker(req, res){
 // ***ADMIN PAGES***
 
 function funcAdmin(req, res){
-  content = {title: 'Rubyfruit Farm – Administrator'};
+  content = {
+    title: 'Rubyfruit Farm – Administrator',
+    page_name: 'admin',
+    breadcrumbs: [
+        {link: '/', page_name: 'home'}
+    ]
+  };
   res.render('admin', content);
 }
 
 function func_add_cust(req, res){
-  content = {title: 'Rubyfruit Farm - Customer'};
+  content = {
+    title: 'Rubyfruit Farm - Customer',
+    page_name: 'add new customer',
+    breadcrumbs: [
+        {link: '/', page_name: 'home'},
+        {link: '/admin', page_name: 'admin'}
+    ]
+  };
   res.render('admin_add_cust', content);
 }
 
 function func_updt_cust(req, res){
-  content = {title: 'Rubyfruit Farm - Customer'};
+  content = {
+    title: 'Rubyfruit Farm - Customer',
+    page_name: 'update customer subscription',
+    breadcrumbs: [
+        {link: '/', page_name: 'home'},
+        {link: '/admin', page_name: 'admin'}
+    ]
+  };
   res.render('admin_update_cust', content);
 }
 
 function func_boxes_view(req, res){
-  content = {title: 'Rubyfruit Farm - Boxes'};
+  content = {
+    title: 'Rubyfruit Farm - Boxes',
+    page_name: 'view and add boxes',
+    breadcrumbs: [
+        {link: '/', page_name: 'home'},
+        {link: '/admin', page_name: 'admin'}
+    ]
+  };
   res.render('adminBoxView', content);
 }
 
@@ -197,6 +306,9 @@ function func_boxes_view(req, res){
 const get_crop_types_query = 'SELECT crop_name, crop_id FROM Crop_Types;';
 const add_crop_row_query = "INSERT INTO Crop_Rows (`crop_id`, `mature_date`) VALUES (?, ?);";
 const get_crop_rows_query = 'SELECT row_id, Crop_Rows.crop_id, mature_date, crop_name FROM Crop_Rows LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
+const add_harvest_query = "INSERT INTO Harvests (`row_id`, `quantity`, `harvest_date`, `expiration_date`) VALUES (?, ?, ?, ?);";
+const get_harvests_query = 'SELECT harvest_id, crop_name, quantity, harvest_date, expiration_date FROM Harvests LEFT JOIN Crop_Rows ON Harvests.row_id = Crop_Rows.row_id LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
+const add_crop_type_query = "INSERT INTO Crop_Types (`crop_name`) VALUES (?);"
 
 
 
@@ -215,8 +327,8 @@ function func_INSERT_crop_rows(req, res, next) {
                 res.type('text/plain');
                 res.status(401);
                 res.send('401 - bad INSERT');
-              console.log(err);
-              return;
+                console.log(err);
+                return;
             }
             // on return, send good response back
             res.type('text/plain');
@@ -226,6 +338,50 @@ function func_INSERT_crop_rows(req, res, next) {
     )
 }
 
+app.post('/INSERT-harvests', func_INSERT_harvests);
+function func_INSERT_harvests(req, res, next) {
+    var {row_id, quantity, harvest_date, expiration_date} = req.body;
+    pool.query(
+        add_harvest_query,
+        [row_id, quantity, harvest_date, expiration_date],
+        function(err, result){
+            if(err){
+                res.type('text/plain');
+                res.status(401);
+                res.send('401 - bad INSERT');
+                console.log(err);
+                return;
+            }
+            // on return, send good response back
+            res.type('text/plain');
+            res.status(200);
+            res.send('200 - good INSERT');
+        }
+    )
+}
+
+
+app.post('/INSERT-crop-types', func_INSERT_crop_types);
+function func_INSERT_crop_types(req, res, next) {
+    var {crop_name} = req.body;
+    pool.query(
+        add_crop_type_query,
+        [crop_name],
+        function(err, result){
+            if(err){
+                res.type('text/plain');
+                res.status(401);
+                res.send('401 - bad INSERT');
+                console.log(err);
+                return;
+            }
+            // on return, send good response back
+            res.type('text/plain');
+            res.status(200);
+            res.send('200 - good INSERT');
+        }
+    )
+}
 
     ////////////
    // errors //

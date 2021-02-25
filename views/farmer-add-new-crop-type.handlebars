@@ -1,4 +1,4 @@
-<!-- farmer-addNewCropType.handlebars -->
+<!-- farmer-add-new-crop-type.handlebars -->
 
 <!-- form to accept new Crop Type -->
 
@@ -12,10 +12,10 @@
                 <div class="row form-group mb-3 mx-2">
                     {{!-- crop type entry --}}
                     <label for="crop-type">Enter crop name:</label>
-                    <input type="text" class="form-control" placeholder="Name" name="crop-type">
+                    <input type="text" class="form-control" placeholder="Name" name="crop-type" id="crop-type">
                 </div>
 
-                <button class="btn btn-green" type="submit" onclick="funcFarmerNewPlanting()">Submit</button>
+                <input type="button" class="btn btn-green" type="submit" onclick="func_INSERT_crop_types()" id="INSERT_button" value="Submit">
             </form>
 
         </div>
@@ -23,5 +23,5 @@
 </div>
 
 
-<script src="/source/js/farmerButtonsHandler.js" charset="utf-8" id="farmerButtonsHandler"></script>
+<script src="/source/js/btn_handler_farmer_add_crop_type.js" charset="utf-8" id="btn_handler"></script>
 
