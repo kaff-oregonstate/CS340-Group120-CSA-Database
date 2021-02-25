@@ -1,42 +1,32 @@
-// btn_handler_farmer_plant_new_row.js
+// btn_handler_farmer_add_crop_type.js
 
-  //////////////////////////////////////////////////////////////////
-// this file will do the SQL for the "farmer: plant new row" page //
-//////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////
+// this file will do the SQL for the "farmer: add new crop type" page //
+//////////////////////////////////////////////////////////////////////
 
 
 // on button click, INSERT and reload page
-function func_INSERT_crop_rows() {
+function func_INSERT_crop_types() {
 
     remove_notification('err_in_last_request')
 
     let submit_button = document.getElementById('INSERT_button');
     disable_button(submit_button);
 
-    // package up name:values into JSON
-    let new_row = {};
+    //-- package up name:values into JSON --//
+    let new_crop_type = {};
 
-    // crop_id
-    new_row.crop_id = document.getElementById('crop-type').value;
-    console.log(new_row.crop_id);
+    // crop_name
+    new_crop_type.crop_name = document.getElementById('crop-type').value;
+    console.log(new_crop_type.crop_name);
 
-    // mature_date
-    new_row.mature_date = document.getElementById('date-to-harvest').value;
-    console.log(new_row.mature_date);
+    // if new type is missing a name, notify the user and stop function:
+    if (no_name_handler(new_crop_type)) {return;}
 
-    // if new row is missing a date, notify the user and stop function:
-    if (no_date_handler(new_row)) {return;}
-
-
-    // two requests (nested):
-        // first to backbone so INSERT can be made
-        // second to /farmer-plant-new-row just reloading page
-
-    // request to backbone
-
+    //-- request to backbone --//
     // xmlrequest with values
     let envelope = new XMLHttpRequest();
-    envelope.open('POST','/INSERT-crop-rows',true);
+    envelope.open('POST','/INSERT-crop-types',true);
     envelope.setRequestHeader("Content-Type", "application/json");
 
     // add listener
@@ -57,28 +47,27 @@ function func_INSERT_crop_rows() {
             return
         }
     });
-    envelope.send(JSON.stringify(new_row));
+    envelope.send(JSON.stringify(new_crop_type));
     notify_user('sending_request', "Sending Request, please wait...");
-
 }
 
 
-function no_date_handler(new_row) {
+function no_name_handler(new_crop_type) {
     let submit_button = document.getElementById('INSERT_button');
 
-    // no date and no reminder
-    if (new_row.mature_date == '' && !document.getElementById('remind_to_date')) {
-        notify_user('remind_to_date', "Please indicate the date to harvest the planted row.");
+    // no quantity and no reminder
+    if (new_crop_type.quantity == '' && !document.getElementById('remind_to_count')) {
+        notify_user('remind_to_count', "Please indicate the name of the new crop.");
         enable_button(submit_button);
         return 1;
     }
-    // date and reminder
-    else if (! (new_row.mature_date == '') && document.getElementById('remind_to_date')) {
-        document.getElementById('remind_to_date').remove()
+    // quantity and reminder
+    else if (! (new_crop_type.quantity == '') && document.getElementById('remind_to_count')) {
+        document.getElementById('remind_to_count').remove()
     }
-    // date and no reminder
-    else if (! (new_row.mature_date == '') && ! document.getElementById('remind_to_date')) {}
-    // no date and reminder
+    // quantity and no reminder
+    else if (! (new_crop_type.quantity == '') && ! document.getElementById('remind_to_count')) {}
+    // no quantity and reminder
     else {
         // enable submit button
         enable_button(submit_button);
