@@ -173,9 +173,33 @@ function funcAdmin(req, res){
   res.render('admin', content);
 }
 
-function func_add_cust(req, res){
+function func_add_cust(req, res, next){
+  console.log("ADD customer ROUTE....")
+
+  //add title to page content
   content = {title: 'Rubyfruit Farm - Customer'};
-  res.render('admin_add_cust', content);
+ 
+  //query the server for the data in customers table, store in rows
+  pool.query(get_all_customers, (err, rows) =>{
+    console.log("ADD customer ROUTE.... (1)")
+    if(err){
+      console.log("In ERROR in add customer!");
+      res.type('text/plain');
+      res.status(401);
+      res.send('401 - failed to load customers');
+      console.log(err);
+      return;
+    }
+    console.log("ADD customer ROUTE.... (2)");
+    //add the return to the content of the page
+    content.customers = rows;
+
+    //render the page with the content from the server
+    res.render('admin_add_cust', content);
+    console.log("ADD customer ROUTE.... (3)");
+
+  });
+
 }
 
 function func_updt_cust(req, res){
@@ -198,6 +222,12 @@ const get_crop_types_query = 'SELECT crop_name, crop_id FROM Crop_Types;';
 const add_crop_row_query = "INSERT INTO Crop_Rows (`crop_id`, `mature_date`) VALUES (?, ?);";
 const get_crop_rows_query = 'SELECT row_id, Crop_Rows.crop_id, mature_date, crop_name FROM Crop_Rows LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
 
+
+// ***** admin *****
+
+// add customer page
+const get_all_customers = 'SELECT * FROM Customers';
+const insert_customers = "INSERT INTO Customers (first_name, last_name, date_paid) VALUES(?,?,?);"
 
 
           /////////////////////////////
@@ -226,6 +256,26 @@ function func_INSERT_crop_rows(req, res, next) {
     )
 }
 
+app.post('/INSERT-customer', function(req, res, next){
+
+  console.log("in INSERT CUSTOMER route ...");
+
+  var {first_name, last_name, date_paid} = req.body;
+  pool.query(insert_customers, [first_name, last_name, date_paid], (err,result) => {
+    if(err){
+      console.log("In ERROR insert customer!");
+      res.type('text/plain');
+      res.status(401);
+      res.send('401 - bad INSERT');
+      console.log(err);
+      return;
+    }
+    res.type('text/plain');
+    res.status(200);
+    res.send('200 - good INSERT');
+  });
+  console.log("outside query in insert customer");
+});
 
     ////////////
    // errors //

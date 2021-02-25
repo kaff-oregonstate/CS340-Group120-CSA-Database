@@ -8,7 +8,7 @@
     <div class="card text-center bg-green m-3" style="width: auto;">
 
         <div class="card-body">
-            <form class="text-left" action="">
+            <form class="text-left" id="submit-customer">
                 <div class="form-row">
                     {{!-- customer first name input --}}
                     <div class="form-group col-md-4 mb-3" style="width: auto;">
@@ -23,13 +23,38 @@
                     {{!-- customer subscription start date--}}
                     <div class="form-group col-md-4 mb-3">
                         <label for="subs-start-date">Subscription Start Date</label>
-                        <input class="form-control" type="date" name="subs-start-date-add" id="subs-start-date">  
+                        <input class="form-control" type="date" name="date-paid-add" id="date-paid-add">  
                     </div>
                 </div>
 
-                <button class="btn btn-green" type="submit" onclick="func_new_customer()" >Submit</button>
+                <button class="btn btn-green" type="submit">Submit</button>
             </form>
+            <p id="add-cust-error"></p>
         </div>
+    </div>
+
+    <div class="card text-center bg-green m-3" style="width: auto;">
+
+        <div class="card-body">
+
+                <table class="table" id="add_cust_table">
+                        <thead> 
+                            <th>First Name</th> 
+                            <th>Last Name</th> 
+                            <th>Subscription Date</th> 
+                        </thead> 
+                            <tbody> 
+                                {{#each customers}} 
+                                <tr> 
+                                    <td>{{first_name}}</td> 
+                                    <td>{{last_name}}</td> 
+                                    <td>{{date_paid}}</td> 
+                                </tr> 
+                                {{/each}} 
+                            </tbody> 
+                </table>
+        </div>
+
     </div>
 
 </div>
