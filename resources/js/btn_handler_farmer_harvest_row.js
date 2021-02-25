@@ -13,7 +13,7 @@ function func_INSERT_harvests() {
     let submit_button = document.getElementById('INSERT_button');
     disable_button(submit_button);
 
-    // package up name:values into JSON
+    //-- package up name:values into JSON --//
     let new_harvest = {};
 
     // row_id
@@ -35,16 +35,13 @@ function func_INSERT_harvests() {
     new_harvest.expiration_date = document.getElementById('expire-date').value;
     console.log(new_harvest.expiration_date);
 
-    // if new row is missing a date, notify the user and stop function:
-    no_quantity_flag = no_quantity_handler(new_harvest);
-    if (no_quantity_flag) {return;}
+    // if new harvest is missing a quantity, notify the user and stop function:
+    if (no_quantity_handler(new_harvest)) {return;}
 
-    // if new row is missing a date, notify the user and stop function:
-    no_date_flag = no_expiration_date_handler(new_harvest);
-    if (no_date_flag) {return;}
+    // if new harvest is missing a date, notify the user and stop function:
+    if (no_expiration_date_handler(new_harvest)) {return;}
 
-    // request to backbone
-
+    //-- request to backbone --//
     // xmlrequest with values
     let envelope = new XMLHttpRequest();
     envelope.open('POST','/INSERT-harvests',true);

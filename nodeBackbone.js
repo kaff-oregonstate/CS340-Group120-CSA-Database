@@ -78,7 +78,7 @@ app.get('/farmer-plant-new-row', func_farmer_new_crop_rows);
 app.get('/farmer-harvest-new-row', func_farmer_new_harvest);
 app.get('/farmer-view-planted-rows', func_farmer_view_rows);
 app.get('/farmer-view-produce-on-hand', func_farmer_view_produce);
-app.get('/farmer-add-new-crop-type', funcAddNewCropType)
+app.get('/farmer-add-new-crop-type', func_add_new_crop_type)
 
 //routes for box packer
 app.get('/box-packer', funcBoxPacker);
@@ -219,7 +219,7 @@ function func_farmer_view_produce(req, res){
     )
 }
 
-function funcAddNewCropType(req, res){
+function func_add_new_crop_type(req, res){
     content = {
         title: 'Rubyfruit Farm – Add Crop Type',
         page_name: 'add new crop type',
@@ -228,7 +228,7 @@ function funcAddNewCropType(req, res){
             {link: '/farmer', page_name: 'farmer'}
         ]
     };
-    res.render('farmer-addNewCropType', content);
+    res.render('farmer-add-new-crop-type', content);
 }
 
           /////////////////////
@@ -308,6 +308,7 @@ const add_crop_row_query = "INSERT INTO Crop_Rows (`crop_id`, `mature_date`) VAL
 const get_crop_rows_query = 'SELECT row_id, Crop_Rows.crop_id, mature_date, crop_name FROM Crop_Rows LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
 const add_harvest_query = "INSERT INTO Harvests (`row_id`, `quantity`, `harvest_date`, `expiration_date`) VALUES (?, ?, ?, ?);";
 const get_harvests_query = 'SELECT harvest_id, crop_name, quantity, harvest_date, expiration_date FROM Harvests LEFT JOIN Crop_Rows ON Harvests.row_id = Crop_Rows.row_id LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
+const add_crop_type_query = "INSERT INTO Crop_Types (`crop_name`) VALUES (?);"
 
 
 
@@ -326,8 +327,8 @@ function func_INSERT_crop_rows(req, res, next) {
                 res.type('text/plain');
                 res.status(401);
                 res.send('401 - bad INSERT');
-              console.log(err);
-              return;
+                console.log(err);
+                return;
             }
             // on return, send good response back
             res.type('text/plain');
@@ -348,8 +349,8 @@ function func_INSERT_harvests(req, res, next) {
                 res.type('text/plain');
                 res.status(401);
                 res.send('401 - bad INSERT');
-              console.log(err);
-              return;
+                console.log(err);
+                return;
             }
             // on return, send good response back
             res.type('text/plain');
@@ -359,6 +360,28 @@ function func_INSERT_harvests(req, res, next) {
     )
 }
 
+
+app.post('/INSERT-crop-types', func_INSERT_crop_types);
+function func_INSERT_crop_types(req, res, next) {
+    var {crop_name} = req.body;
+    pool.query(
+        add_crop_type_query,
+        [crop_name],
+        function(err, result){
+            if(err){
+                res.type('text/plain');
+                res.status(401);
+                res.send('401 - bad INSERT');
+                console.log(err);
+                return;
+            }
+            // on return, send good response back
+            res.type('text/plain');
+            res.status(200);
+            res.send('200 - good INSERT');
+        }
+    )
+}
 
     ////////////
    // errors //
