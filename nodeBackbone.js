@@ -75,10 +75,10 @@ app.get('/', funcHome);
 //routes for farmer and planting pages
 app.get('/farmer', funcFarmer);
 app.get('/farmer-plant-new-row', func_farmer_new_crop_rows);
-app.get('/farmer-harvestNewRow', funcFarmerNewHarvest);
+app.get('/farmer-harvest-new-row', func_farmer_new_harvest);
 app.get('/farmer-view-planted-rows', func_farmer_view_rows);
-app.get('/farmer-viewProduceOnHand', funcFarmerViewProduce);
-app.get('/farmer-addNewCropType', funcAddNewCropType)
+app.get('/farmer-view-produce-on-hand', func_farmer_view_produce);
+app.get('/farmer-add-new-crop-type', funcAddNewCropType)
 
 //routes for box packer
 app.get('/box-packer', funcBoxPacker);
@@ -91,7 +91,9 @@ app.get('/admin-boxes-view',func_boxes_view);
 
 function funcHome(req, res){
     content = {
-title: 'Rubyfruit Farm', page_name: 'home'};
+        title: 'Rubyfruit Farm',
+        page_name: 'home'
+    };
     res.render('home', content);
 }
 
@@ -132,7 +134,7 @@ function func_farmer_new_crop_rows(req, res){
     )
 }
 
-function funcFarmerNewHarvest(req, res){
+function func_farmer_new_harvest(req, res){
     content = {
         title: 'Rubyfruit Farm – Enter Row Harvested',
         page_name: 'harvest new row',
@@ -141,7 +143,18 @@ function funcFarmerNewHarvest(req, res){
             {link: '/farmer', page_name: 'farmer'}
         ]
     };
-    res.render('farmer-harvestNewRow', content);
+    // get the crop rows before rendering
+    pool.query(
+        get_crop_rows_query,
+        function(err, result){
+            content.crop_rows = result;
+            for (i in content.crop_rows) {
+                var date = new Date(content.crop_rows[i].mature_date);
+                content.crop_rows[i].mature_date = Intl.DateTimeFormat('en-US').format(date);
+            }
+            res.render('farmer-harvest-new-row', content);
+        }
+    )
 }
 
 function func_farmer_view_rows(req, res){
@@ -153,7 +166,7 @@ function func_farmer_view_rows(req, res){
             {link: '/farmer', page_name: 'farmer'}
         ]
     };
-    // get the crop type names before rendering
+    // get the crop rows before rendering
     pool.query(
         get_crop_rows_query,
         function(err, result){
@@ -166,14 +179,15 @@ function func_farmer_view_rows(req, res){
                     //     console.log(content.crop_rows[r]);
                     // }
             for (i in content.crop_rows) {
-                content.crop_rows[i].mature_date = new Date(content.crop_rows[i].mature_date).toDateString()
+                var date = new Date(content.crop_rows[i].mature_date);
+                content.crop_rows[i].mature_date = Intl.DateTimeFormat('en-US').format(date);
             }
             res.render('farmer-view-planted-rows', content);
         }
     )
 }
 
-function funcFarmerViewProduce(req, res){
+function func_farmer_view_produce(req, res){
     content = {
         title: 'Rubyfruit Farm – View Produce',
         page_name: 'view produce on hand',
@@ -182,7 +196,27 @@ function funcFarmerViewProduce(req, res){
             {link: '/farmer', page_name: 'farmer'}
         ]
     };
-    res.render('farmer-viewProduceOnHand', content);
+    // get the harvests before rendering
+    pool.query(
+        get_harvests_query,
+        function(err, result){
+            // on return:
+                // push results into content
+                // convert the dates to DateStrings for js
+                // render farmer-view-planted-rows
+            content.harvests = result;
+                    // for (r in content.crop_rows) {
+                    //     console.log(content.crop_rows[r]);
+                    // }
+            for (i in content.harvests) {
+                var date1 = new Date(content.harvests[i].harvest_date);
+                content.harvests[i].harvest_date = Intl.DateTimeFormat('en-US').format(date1);
+                var date2 = new Date(content.harvests[i].expiration_date);
+                content.harvests[i].expiration_date = Intl.DateTimeFormat('en-US').format(date2);
+            }
+            res.render('farmer-view-produce-on-hand', content);
+        }
+    )
 }
 
 function funcAddNewCropType(req, res){
@@ -272,6 +306,8 @@ function func_boxes_view(req, res){
 const get_crop_types_query = 'SELECT crop_name, crop_id FROM Crop_Types;';
 const add_crop_row_query = "INSERT INTO Crop_Rows (`crop_id`, `mature_date`) VALUES (?, ?);";
 const get_crop_rows_query = 'SELECT row_id, Crop_Rows.crop_id, mature_date, crop_name FROM Crop_Rows LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
+const add_harvest_query = "INSERT INTO Harvests (`row_id`, `quantity`, `harvest_date`, `expiration_date`) VALUES (?, ?, ?, ?);";
+const get_harvests_query = 'SELECT harvest_id, crop_name, quantity, harvest_date, expiration_date FROM Harvests LEFT JOIN Crop_Rows ON Harvests.row_id = Crop_Rows.row_id LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
 
 
 
@@ -285,6 +321,28 @@ function func_INSERT_crop_rows(req, res, next) {
     pool.query(
         add_crop_row_query,
         [crop_id, mature_date],
+        function(err, result){
+            if(err){
+                res.type('text/plain');
+                res.status(401);
+                res.send('401 - bad INSERT');
+              console.log(err);
+              return;
+            }
+            // on return, send good response back
+            res.type('text/plain');
+            res.status(200);
+            res.send('200 - good INSERT');
+        }
+    )
+}
+
+app.post('/INSERT-harvests', func_INSERT_harvests);
+function func_INSERT_harvests(req, res, next) {
+    var {row_id, quantity, harvest_date, expiration_date} = req.body;
+    pool.query(
+        add_harvest_query,
+        [row_id, quantity, harvest_date, expiration_date],
         function(err, result){
             if(err){
                 res.type('text/plain');
