@@ -25,10 +25,9 @@ function func_INSERT_harvests() {
     console.log(new_harvest.quantity);
 
     // harvest_date
-    var date = new Date();
-    // date is tomorrow for some reason at 16:25, decrementing ***check_this***
-        // now it's overcorrecting, at 12:49
-    date.setDate(date.getDate());
+    let date = new Date();
+    let offset = date.getTimezoneOffset() * 60 * 1000;
+    date = new Date(date.getTime() - offset);
     new_harvest.harvest_date = date.toISOString().substring(0,10);
     console.log(new_harvest.harvest_date);
 

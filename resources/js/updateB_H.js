@@ -135,7 +135,7 @@ function UPDATE_boxes_harvests_ALGORITHM() {
                 }
                 // otherwise add the base amount
                 else {
-                    INSERT Boxes_Harvests
+                    INSERT INTO Boxes_Harvests
                         (box_id, harvest_id, qty_per)
                         VALUES (:b.box_id, :h.harvest_id;, (:baseLevel));
                 }

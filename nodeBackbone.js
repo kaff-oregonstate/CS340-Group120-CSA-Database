@@ -421,17 +421,11 @@ app.listen(app.get('port'), function(){
      // Working on UPDATE Boxes_Harvests. //
     ///////////////////////////////////////
 
-// updateB_H.js
-
-// TODO: **change "qty" in Harvests into "qty_harvested", & add "qty_left" INT
-// TODO: **add "qty_per" INT to Boxes_Harvests
-// TODO: **add "num_packed" INT Boxes
-
 
 function get_next_box_helper(results) {
     var today = getTheCorrectToday();
     var next_box;
-    var next_box_date = new Date();
+    var next_box_date = 0;
     for (r in results) {
         var box_date = new Date(results[r].box_date);
         if (box_date.valueOf() > today.valueOf()) {
@@ -439,8 +433,6 @@ function get_next_box_helper(results) {
                 next_box = results[r];
                 next_box_date = box_date;
             }
-            // console.log(results[r]);
-            // return results[r];
         }
     }
     return next_box;
@@ -460,17 +452,15 @@ function get_next_box() {
 
 }
 
+
 function get_relevant_harvests(next_box) {
     return new Promise(function(resolve, reject) {
-        console.log(next_box);
         var date = new Date(next_box.box_date);
-        console.log(date.toISOString());
         date = new Date(date.valueOf() + (14 * 24 * 60 * 60 * 1000));
-        console.log(date.toISOString());
-        boxes_finalized_date = `'` + date.toISOString().substring(0,10) + `'`;
-        console.log(`Boxes before this date are finalized: ${boxes_finalized_date}`);
+        harvest_finalizer_date = `'` + date.toISOString().substring(0,10) + `'`;
+        console.log(`Distribution of Harvests expiring b4 ${harvest_finalizer_date} is finalized, don't update.`);
         pool.query(
-            "SELECT * FROM Harvests WHERE expiration_date >= " + boxes_finalized_date,
+            "SELECT * FROM Harvests WHERE expiration_date >= " + harvest_finalizer_date,
             function(err, result) {
                 if (err) reject(err);
                 else resolve(result);
@@ -478,6 +468,7 @@ function get_relevant_harvests(next_box) {
         );
     });
 }
+
 
 function get_customer_counts(relevant_boxes) {
     // console.log(relevant_boxes);
@@ -487,7 +478,7 @@ function get_customer_counts(relevant_boxes) {
                 "SELECT Count(*) AS number_of_customers FROM Boxes_Customers WHERE box_id = " + box.box_id + ";",
                 function(err, result) {
                     if (err) reject(err);
-                    else resolve(result[0]);
+                    else {resolve(result[0].number_of_customers);}
                 }
             );
         });}
@@ -495,46 +486,180 @@ function get_customer_counts(relevant_boxes) {
     return Promise.all(customer_counts).then(counts => {return counts})
 }
 
+
 function parse_boxes_for_dist(boxes, qty_left) {
-    console.log(boxes);
+    // console.log(`boxes in parse_boxes_for_dist`);
+    // console.log(boxes);
     var today = getTheCorrectToday();
     today = today.valueOf();
+    let linked_box_ids = [];
     for (b in boxes) {
         var box_date = new Date(boxes[b].box_date);
         box_date = box_date.valueOf();
         if (box_date > today + (7 * 24 * 60 * 60 * 1000)) {
-            console.log('one box bigger than today + 7');
-            continue;
+            // console.log('one box bigger than today + 7');
+            linked_box_ids.push(boxes[b].box_id);
         }
         else if (box_date >= today) {
-            console.log('one box bigger than today but smaller than today + 7');
-            allocated = boxes[b].qty_per * (boxes[b].number_of_customers - boxes[b].number_packed);
+            // console.log('one box bigger than today but smaller than today + 7');
+            let allocated = boxes[b].qty_per * (boxes[b].number_of_customers - boxes[b].number_packed);
             qty_left -= allocated;
-            boxes.splice(b, 1);
         }
-        else {
-            console.log('one box smaller than today');
-             boxes.splice(b, 1); } 
+        // else console.log('one box smaller than today');
     }
-    // boxes.splice(0, 0, {qty_left: qty_left});
-    return boxes;
+    return [linked_box_ids, qty_left];
 }
+
+
+function get_boxes_in_window(expiration_date) {
+    // console.log(`getting boxes in window for ${expiration_date.toISOString().substring(0,10)}`);
+    let today = getTheCorrectToday();
+    let date0 = new Date(today.getTime() + (8 * 24 * 60 * 60 * 1000));
+    date0 = `'` + date0.toISOString().substring(0,10) + `'`;
+    // console.log(date0);
+    expiration_date = new Date(expiration_date);
+    let date1 = new Date(expiration_date.getTime() - (8 * 24 * 60 * 60 * 1000));
+    date1 = `'` + date1.toISOString().substring(0,10) + `'`;
+    // console.log(date1);
+    return new Promise(function(resolve, reject) {
+        pool.query(
+            "SELECT * FROM Boxes WHERE box_date BETWEEN " + date0 + " AND " + date1 + ";",
+            function(err, result) {
+                if (err) reject(err);
+                else {
+                    // console.log(`boxes for ${expiration_date.toISOString().substring(0,10)}`);
+                    // console.log(result);
+                    resolve(result);
+                }
+            }
+        );
+    });
+}
+
+
+function upd_B_H(box, harvest, qty_per) {
+    return new Promise(function(resolve, reject) {
+        pool.query(
+            "UPDATE Boxes_Harvests SET `qty_per` = ? WHERE `box_id` = ? AND `harvest_id` = ?",
+            [qty_per, box, harvest],
+            function (err, result) {
+                if(err) reject(err);
+                else resolve(result);
+            }
+        );
+    });
+}
+
+function add_B_H(box, harvest, qty_per) {
+    return new Promise(function(resolve, reject) {
+        pool.query(
+            "INSERT INTO Boxes_Harvests (`box_id`, `harvest_id`, `qty_per`) VALUE (?,?,?)",
+            [box, harvest, qty_per],
+            function (err, result) {
+                if(err) reject(err);
+                else resolve(result);
+            }
+        );
+    });
+}
+
+function rmv_B_H(box, harvest) {
+    return new Promise(function(resolve, reject) {
+        pool.query(
+            "DELETE FROM Boxes_Harvests WHERE `box_id` = ? AND `harvest_id` = ?;",
+            [box, harvest],
+            function (err, result) {
+                if(err) reject(err);
+                else resolve(result);
+            }
+        );
+    });
+}
+
+
+function audit_B_H_for_harvest(harvest, box_ids_and_qty_left) {
+    let qty_left = box_ids_and_qty_left[1];
+    let linked_box_ids = box_ids_and_qty_left[0];
+    let harvest_id = harvest.harvest_id;
+    // console.log(`box_ids_and_qty_left in audit for harvest ${harvest_id}`);
+    // console.log(box_ids_and_qty_left);
+    // console.log(`qty_left in audit for harvest ${harvest_id}`);
+    // console.log(qty_left);
+
+
+    let got_boxes = get_boxes_in_window(harvest.expiration_date);
+    got_boxes.then(boxes => {
+        // console.log(`boxes`);
+        // console.log(boxes);
+        counted_boxes = get_customer_counts(boxes);
+        counted_boxes.then( counts => {
+            console.log(`==-==-==-==-==`);
+            console.log(`for harvest ${harvest.harvest_id}`);
+            console.log(`--=--=--=--=--`);
+            console.log(`counts`);
+            console.log(counts);
+            let boxes_to_serve = counts.reduce((a, b) => a + b, 0);
+            console.log(`boxes_to_serve`);
+            console.log(boxes_to_serve);
+            if (boxes_to_serve == 0) return;
+            let base_amount = Math.floor(qty_left/boxes_to_serve);
+            console.log(`base_amount`);
+            console.log(base_amount);
+            console.log(`qty_left before base_amount_served reduction`);
+            console.log(qty_left);
+            qty_left -= base_amount * boxes_to_serve;
+            console.log(`after`);
+            console.log(qty_left);
+            for (b in boxes) {
+                if (linked_box_ids.includes(boxes[b].box_id)) {
+                    removeItemOnce(linked_box_ids, boxes[b].box_id);
+                    if (qty_left > counts[b]) {
+                        upd_B_H(boxes[b].box_id, harvest_id, base_amount + 1);
+                    } else {
+                        upd_B_H(boxes[b].box_id, harvest_id, base_amount)
+                    }
+                } else {
+                    if (qty_left > counts[b]) {
+                        add_B_H(boxes[b].box_id, harvest_id, base_amount + 1);
+                    } else {
+                        add_B_H(boxes[b].box_id, harvest_id, base_amount)
+                    }
+                }
+            }
+            for (l in linked_box_ids) {
+                rmv_B_H(linked_box_ids[l], harvest_id);
+            }
+        })
+    })
+}
+
 
 function get_relevant_boxes_with_counts(harvest) {   //*** rename ***
     let qty_left = harvest.quantity_harvested - harvest.quantity_distributed;
+    // console.log(`qty_left for harvest ${harvest.harvest_id}`);
+    // console.log(qty_left);
     return new Promise(function(resolve, reject) {
         pool.query(
-            "SELECT Boxes_Harvests.box_id, box_date, number_packed FROM Boxes_Harvests LEFT JOIN Boxes ON Boxes_Harvests.box_id = Boxes.box_id WHERE harvest_id = " + harvest.harvest_id + ";",
+            "SELECT Boxes_Harvests.box_id, box_date, number_packed, qty_per FROM Boxes_Harvests LEFT JOIN Boxes ON Boxes_Harvests.box_id = Boxes.box_id WHERE harvest_id = " + harvest.harvest_id + ";",
             function(err, result) {
                 if (err) reject(err);
+                else if (result.length == 0) {
+                    audit_B_H_for_harvest(harvest, [[],qty_left]);
+                    resolve([]);
+                }
                 else {
                     count = get_customer_counts(result);
                     count.then(value => {
                         for (r in result) {
-                            result[r].number_of_customers = value[r].number_of_customers;
+                            result[r].number_of_customers = value[r];
                         }
-                        let boxes = parse_boxes_for_dist(result, qty_left);
-                        resolve(boxes);
+                        // console.log(`results after customer counts for harvest ${harvest.harvest_id}`);
+                        // console.log(result);
+                        let box_ids_and_qty_left = parse_boxes_for_dist(result, qty_left);
+                        // console.log(`res of parser for harvest ${harvest.harvest_id}`);
+                        // console.log(box_ids_and_qty_left);
+                        audit_B_H_for_harvest(harvest, box_ids_and_qty_left);
+                        resolve();
                     });
                 }
             }
@@ -543,7 +668,7 @@ function get_relevant_boxes_with_counts(harvest) {   //*** rename ***
 }
 
 
-function UPDATE_boxes_harvests_ALGORITHM() {
+function audit_boxes_harvests_ALGORITHM() {
     let next_box = get_next_box();
     let relevant_harvests = next_box.then(value => get_relevant_harvests(value));
 
@@ -554,10 +679,10 @@ function UPDATE_boxes_harvests_ALGORITHM() {
         return Promise.all(distribution_updates).then(statuses => {return statuses})
     });
 
-    update_return_code.then(value => console.log(value));
+    // update_return_code.then(value => console.log(value));
 }
 
-UPDATE_boxes_harvests_ALGORITHM();
+audit_boxes_harvests_ALGORITHM();
 
 
 
@@ -698,5 +823,14 @@ async function sleep() {
 }
 async function slep() {
     await zzz(200);
+}
+
+// stackoverflow_5767325
+function removeItemOnce(arr, value) {
+  var index = arr.indexOf(value);
+  if (index > -1) {
+    arr.splice(index, 1);
+  }
+  return arr;
 }
 
