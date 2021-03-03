@@ -103,7 +103,10 @@ VALUES
     ('2021-07-19'),
     ('2021-07-26'),
     ('2021-08-02'),
-    ('2021-08-09');
+    ('2021-08-09'),
+    ('2021-03-03'),
+    ('2021-03-10'),
+    ('2021-03-17');
 
 -- js variable definition for inserting into Boxes
 
@@ -118,7 +121,11 @@ INSERT INTO Crop_Types
 VALUES('Carrots'),
       ('Potatoes'),
       ('Asparagus'),
-      ('Broccoli');
+      ('Broccoli'),
+      ('Corriander'),
+      ('Rainbow Chard'),
+      ('Garnet Yams'),
+      ('Daffodils');
 
 -- Crop_Rows SAMPLE DATA
 
@@ -126,7 +133,12 @@ INSERT INTO Crop_Rows
 (mature_date, crop_id)
 VALUES('2021-04-05', (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Carrots')),
       ('2021-03-22', (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Potatoes')),
-      ('2021-05-01', (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Asparagus'));
+      ('2021-05-01', (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Asparagus')),
+      ('2021-01-01', (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Broccoli')),
+      ('2021-01-16', (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Corriander')),
+      ('2021-02-28', (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Rainbow Chard')),
+      ('2021-02-03', (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Garnet Yams')),
+      ('2021-01-08', (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Daffodils'));
 
 -- Customers SAMPLE DATA
 
@@ -139,15 +151,15 @@ VALUES('2021-04-05', (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Carrots'
 INSERT INTO Customers
     (first_name, last_name, date_paid)
 VALUES
-    ('Charlie', 'Lopez', '2009-03-05'),
-    ('Justice', 'Davis', '2015-12-15'),
-    ('Finley', 'Brown', '1999-01-17'),
-    ('Emerson', 'Sullivan', '2002-06-27'),
-    ('River', 'Reynolds', '2017-10-18'),
-    ('Quinn', 'Romero', '2020-05-09'),
-    ('Rory', 'Castillo', '2000-07-24'),
-    ('Venus', 'Bassi', '2006-09-07'),
-    ('Shae', 'Kim', '1998-11-26');
+    ('Charlie', 'Lopez', '2021-03-05'),
+    ('Justice', 'Davis', '2021-12-15'),
+    ('Finley', 'Brown', '2021-04-17'),
+    ('Emerson', 'Sullivan', '2021-06-27'),
+    ('River', 'Reynolds', '2021-10-18'),
+    ('Quinn', 'Romero', '2021-05-09'),
+    ('Rory', 'Castillo', '2021-07-24'),
+    ('Venus', 'Bassi', '2021-09-07'),
+    ('Shae', 'Kim', '2021-11-26');
 
 -- Harvests SAMPLE DATA
 
@@ -155,7 +167,12 @@ INSERT INTO Harvests
 (harvest_date, expiration_date, row_id, quantity_harvested)
 VALUES('2021-04-05', '2021-07-22', (SELECT row_id FROM Crop_Rows WHERE mature_date = '2021-04-05' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Carrots')), 80),
       ('2021-03-22', '2021-11-22', (SELECT row_id FROM Crop_Rows WHERE mature_date = '2021-03-22' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Potatoes')), 654),
-      ('2021-05-01', '2021-06-22', (SELECT row_id FROM Crop_Rows WHERE mature_date = '2021-05-01' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Asparagus')), 203);
+      ('2021-05-01', '2021-06-22', (SELECT row_id FROM Crop_Rows WHERE mature_date = '2021-05-01' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Asparagus')), 203),
+      ('2021-01-01', '2021-03-18', (SELECT row_id FROM Crop_Rows WHERE mature_date = '2021-01-01' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Broccoli')), 408),
+      ('2021-01-16', '2021-04-24', (SELECT row_id FROM Crop_Rows WHERE mature_date = '2021-01-16' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Corriander')), 326),
+      ('2021-02-28', '2021-04-03', (SELECT row_id FROM Crop_Rows WHERE mature_date = '2021-02-28' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Rainbow Chard')), 97),
+      ('2021-02-03', '2021-08-06', (SELECT row_id FROM Crop_Rows WHERE mature_date = '2021-02-03' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Garnet Yams')), 421),
+      ('2021-01-08', '2021-05-30', (SELECT row_id FROM Crop_Rows WHERE mature_date = '2021-01-08' AND crop_id = (SELECT crop_id FROM Crop_Types WHERE crop_name = 'Daffodils')), 254);
 
 -- Boxes_Customers SAMPLE DATA
 

@@ -429,13 +429,13 @@ app.listen(app.get('port'), function(){
 
 
 function get_next_box_helper(results) {
-    var today = new Date();
+    var today = getTheCorrectToday();
     var next_box;
-    var next_box_date = 0;
+    var next_box_date = new Date();
     for (r in results) {
         var box_date = new Date(results[r].box_date);
-        if (box_date > today) {
-            if (box_date < next_box_date || next_box_date == 0) {
+        if (box_date.valueOf() > today.valueOf()) {
+            if (box_date.valueOf() < next_box_date.valueOf() || next_box_date == 0) {
                 next_box = results[r];
                 next_box_date = box_date;
             }
@@ -464,10 +464,13 @@ function get_relevant_harvests(next_box) {
     return new Promise(function(resolve, reject) {
         console.log(next_box);
         var date = new Date(next_box.box_date);
-        next_box_date = `'` + date.toISOString().substring(0,10) + `'`;
-        console.log(`next box date: ${next_box_date}`);
+        console.log(date.toISOString());
+        date = new Date(date.valueOf() + (14 * 24 * 60 * 60 * 1000));
+        console.log(date.toISOString());
+        boxes_finalized_date = `'` + date.toISOString().substring(0,10) + `'`;
+        console.log(`Boxes before this date are finalized: ${boxes_finalized_date}`);
         pool.query(
-            "SELECT * FROM Harvests WHERE expiration_date >= " + next_box_date,
+            "SELECT * FROM Harvests WHERE expiration_date >= " + boxes_finalized_date,
             function(err, result) {
                 if (err) reject(err);
                 else resolve(result);
@@ -476,7 +479,7 @@ function get_relevant_harvests(next_box) {
     });
 }
 
-function get_relevant_customers(relevant_boxes) {
+function get_customer_counts(relevant_boxes) {
     // console.log(relevant_boxes);
     customer_counts = relevant_boxes.map(box =>
         {return new Promise(function(resolve, reject) {
@@ -492,22 +495,46 @@ function get_relevant_customers(relevant_boxes) {
     return Promise.all(customer_counts).then(counts => {return counts})
 }
 
-function get_relevant_boxes_with_counts(relevant_harvests) {
+function parse_boxes_for_dist(boxes, qty_left) {
+    console.log(boxes);
+    var today = getTheCorrectToday();
+    today = today.valueOf();
+    for (b in boxes) {
+        var box_date = new Date(boxes[b].box_date);
+        box_date = box_date.valueOf();
+        if (box_date > today + (7 * 24 * 60 * 60 * 1000)) {
+            console.log('one box bigger than today + 7');
+            continue;
+        }
+        else if (box_date >= today) {
+            console.log('one box bigger than today but smaller than today + 7');
+            allocated = boxes[b].qty_per * (boxes[b].number_of_customers - boxes[b].number_packed);
+            qty_left -= allocated;
+            boxes.splice(b, 1);
+        }
+        else {
+            console.log('one box smaller than today');
+             boxes.splice(b, 1); } 
+    }
+    // boxes.splice(0, 0, {qty_left: qty_left});
+    return boxes;
+}
+
+function get_relevant_boxes_with_counts(harvest) {   //*** rename ***
+    let qty_left = harvest.quantity_harvested - harvest.quantity_distributed;
     return new Promise(function(resolve, reject) {
-        // for (h in relevant_harvests) {}
-        console.log(relevant_harvests);
-        let harvest = relevant_harvests[1];
         pool.query(
-            "SELECT Boxes_Harvests.box_id, box_date FROM Boxes_Harvests LEFT JOIN Boxes ON Boxes_Harvests.box_id = Boxes.box_id WHERE harvest_id = " + harvest.harvest_id + ";",
+            "SELECT Boxes_Harvests.box_id, box_date, number_packed FROM Boxes_Harvests LEFT JOIN Boxes ON Boxes_Harvests.box_id = Boxes.box_id WHERE harvest_id = " + harvest.harvest_id + ";",
             function(err, result) {
                 if (err) reject(err);
                 else {
-                    count = get_relevant_customers(result);
+                    count = get_customer_counts(result);
                     count.then(value => {
                         for (r in result) {
                             result[r].number_of_customers = value[r].number_of_customers;
                         }
-                        resolve(result);
+                        let boxes = parse_boxes_for_dist(result, qty_left);
+                        resolve(boxes);
                     });
                 }
             }
@@ -517,14 +544,150 @@ function get_relevant_boxes_with_counts(relevant_harvests) {
 
 
 function UPDATE_boxes_harvests_ALGORITHM() {
-    // next_box = get_next_box().then(value => console.log(value));
     let next_box = get_next_box();
     let relevant_harvests = next_box.then(value => get_relevant_harvests(value));
-    let relevant_boxes = relevant_harvests.then(value => get_relevant_boxes_with_counts(value));
-    relevant_boxes.then(value => console.log(value));
+
+    let update_return_code = relevant_harvests.then(harvests => {
+        distribution_updates = harvests.map(harvest => {
+            return get_relevant_boxes_with_counts(harvest);
+        });
+        return Promise.all(distribution_updates).then(statuses => {return statuses})
+    });
+
+    update_return_code.then(value => console.log(value));
 }
 
 UPDATE_boxes_harvests_ALGORITHM();
+
+
+
+
+function add_B_C(box, customer) {
+    return new Promise(function(resolve, reject) {
+        pool.query(
+            "INSERT INTO Boxes_Customers (box_id,customer_id) VALUES (?, ?);",
+            [box, customer],
+            function (err, result) {
+                if (err) reject(err);
+                else resolve(result);
+            }
+        )
+    });
+}
+
+function rmv_B_C(box, customer) {
+    return new Promise(function(resolve, reject) {
+        pool.query(
+            "DELETE FROM Boxes_Customers WHERE `box_id` = ? AND `customer_id` = ?;",
+            [box, customer],
+            function (err, result) {
+                if (err) reject(err);
+                else resolve(result);
+            }
+        )
+    });
+}
+
+function update_B_C_on_customer(customer, boxes) {
+    var date_paid = new Date(customer.date_paid);
+    date_paid = date_paid.valueOf();
+    for (b in boxes) {
+        var box_date = new Date(boxes[b].box_date);
+        box_date = box_date.valueOf();
+        if (date_paid > box_date) {
+            if (boxes[b].linked_customers.includes(customer.customer_id)) {
+                continue;
+            } else {
+                add_B_C(boxes[b].box_id, customer.customer_id);
+                continue;
+            }
+        }
+        else {
+            if (boxes[b].linked_customers.includes(customer.customer_id)) {
+                rmv_B_C(boxes[b].box_id, customer.customer_id);
+                continue;
+            } else {
+                continue;
+            }
+        }
+    }
+}
+
+function get_relevant_customers() {
+    date = new Date();
+    today = `'` + date.toISOString().substring(0,10) + `'`;
+    return new Promise(function(resolve, reject) {
+        pool.query(
+            "SELECT * FROM Customers WHERE date_paid > " + today + ";",
+            function(err, result) {
+                if (err) reject(err);
+                else resolve(result);
+            }
+        );
+    });
+}
+
+function get_boxes_B_C_links(boxes) {
+    customer_links = boxes.map(box =>
+        {return new Promise(function(resolve, reject) {
+            pool.query(
+                "SELECT customer_id FROM Boxes_Customers WHERE box_id = " + box.box_id + ";",
+                function(err, result) {
+                    if (err) reject(err);
+                    else {
+                        linked_customers = [];
+                        for (r in result) {
+                            linked_customers.push(result[r].customer_id);
+                        }
+                        resolve(linked_customers);
+                    }
+                }
+            );
+        });}
+    );
+    return Promise.all(customer_links).then(customers => {return customers})
+}
+
+function get_relevant_boxes() {
+    let date = getTheCorrectToday();
+    let today = `'` + date.toISOString().substring(0,10) + `'`;
+    return new Promise(function(resolve, reject) {
+        pool.query(
+            "SELECT * FROM Boxes WHERE box_date > " + today + ";",
+            function(err, result) {
+                if (err) reject(err);
+                else {
+                    links = get_boxes_B_C_links(result);
+                    links.then(value => {
+                        for (r in result) {
+                            result[r].linked_customers = value[r];
+                        }
+                        resolve(result)
+                    });
+                }
+            }
+        );
+    });
+}
+
+function UPDATE_boxes_customers_ALGORITHM(){
+    let data = [get_relevant_boxes(), get_relevant_customers()];
+    Promise.all(data).then(data => {
+        for (customer in data[1]) {
+            update_B_C_on_customer(data[1][customer], data[0]);
+        }
+    });
+}
+
+// UPDATE_boxes_customers_ALGORITHM();
+
+
+
+function getTheCorrectToday() {
+    let date = new Date();
+    let offset = date.getTimezoneOffset() * 60 * 1000;
+    return new Date(date.getTime() - offset);
+}
 
 
 function zzz(ms) {
@@ -532,5 +695,8 @@ function zzz(ms) {
 }
 async function sleep() {
     await zzz(2000);
+}
+async function slep() {
+    await zzz(200);
 }
 
