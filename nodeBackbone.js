@@ -306,8 +306,8 @@ function func_boxes_view(req, res){
 const get_crop_types_query = 'SELECT crop_name, crop_id FROM Crop_Types;';
 const add_crop_row_query = "INSERT INTO Crop_Rows (`crop_id`, `mature_date`) VALUES (?, ?);";
 const get_crop_rows_query = 'SELECT row_id, Crop_Rows.crop_id, mature_date, crop_name FROM Crop_Rows LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
-const add_harvest_query = "INSERT INTO Harvests (`row_id`, `quantity`, `harvest_date`, `expiration_date`) VALUES (?, ?, ?, ?);";
-const get_harvests_query = 'SELECT harvest_id, crop_name, quantity, harvest_date, expiration_date FROM Harvests LEFT JOIN Crop_Rows ON Harvests.row_id = Crop_Rows.row_id LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
+const add_harvest_query = "INSERT INTO Harvests (`row_id`, `quantity_harvested`, `harvest_date`, `expiration_date`) VALUES (?, ?, ?, ?);";
+const get_harvests_query = 'SELECT harvest_id, crop_name, quantity_harvested, harvest_date, expiration_date FROM Harvests LEFT JOIN Crop_Rows ON Harvests.row_id = Crop_Rows.row_id LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
 const add_crop_type_query = "INSERT INTO Crop_Types (`crop_name`) VALUES (?);"
 
 
@@ -413,3 +413,124 @@ app.listen(app.get('port'), function(){
 // check one two
 
 // extra comment
+
+
+//======================================================================//
+
+      ///////////////////////////////////////
+     // Working on UPDATE Boxes_Harvests. //
+    ///////////////////////////////////////
+
+// updateB_H.js
+
+// TODO: **change "qty" in Harvests into "qty_harvested", & add "qty_left" INT
+// TODO: **add "qty_per" INT to Boxes_Harvests
+// TODO: **add "num_packed" INT Boxes
+
+
+function get_next_box_helper(results) {
+    var today = new Date();
+    var next_box;
+    var next_box_date = 0;
+    for (r in results) {
+        var box_date = new Date(results[r].box_date);
+        if (box_date > today) {
+            if (box_date < next_box_date || next_box_date == 0) {
+                next_box = results[r];
+                next_box_date = box_date;
+            }
+            // console.log(results[r]);
+            // return results[r];
+        }
+    }
+    return next_box;
+}
+
+
+function get_next_box() {
+    return new Promise(function(resolve, reject) {
+        pool.query(
+            "SELECT * FROM Boxes",
+            function(err, result){
+                if (err) reject(err);
+                else resolve(get_next_box_helper(result));
+            }
+        )
+    });
+
+}
+
+function get_relevant_harvests(next_box) {
+    return new Promise(function(resolve, reject) {
+        console.log(next_box);
+        var date = new Date(next_box.box_date);
+        next_box_date = `'` + date.toISOString().substring(0,10) + `'`;
+        console.log(`next box date: ${next_box_date}`);
+        pool.query(
+            "SELECT * FROM Harvests WHERE expiration_date >= " + next_box_date,
+            function(err, result) {
+                if (err) reject(err);
+                else resolve(result);
+            }
+        );
+    });
+}
+
+function get_relevant_customers(relevant_boxes) {
+    // console.log(relevant_boxes);
+    customer_counts = relevant_boxes.map(box =>
+        {return new Promise(function(resolve, reject) {
+            pool.query(
+                "SELECT Count(*) AS number_of_customers FROM Boxes_Customers WHERE box_id = " + box.box_id + ";",
+                function(err, result) {
+                    if (err) reject(err);
+                    else resolve(result[0]);
+                }
+            );
+        });}
+    );
+    return Promise.all(customer_counts).then(counts => {return counts})
+}
+
+function get_relevant_boxes_with_counts(relevant_harvests) {
+    return new Promise(function(resolve, reject) {
+        // for (h in relevant_harvests) {}
+        console.log(relevant_harvests);
+        let harvest = relevant_harvests[1];
+        pool.query(
+            "SELECT Boxes_Harvests.box_id, box_date FROM Boxes_Harvests LEFT JOIN Boxes ON Boxes_Harvests.box_id = Boxes.box_id WHERE harvest_id = " + harvest.harvest_id + ";",
+            function(err, result) {
+                if (err) reject(err);
+                else {
+                    count = get_relevant_customers(result);
+                    count.then(value => {
+                        for (r in result) {
+                            result[r].number_of_customers = value[r].number_of_customers;
+                        }
+                        resolve(result);
+                    });
+                }
+            }
+        );
+    });
+}
+
+
+function UPDATE_boxes_harvests_ALGORITHM() {
+    // next_box = get_next_box().then(value => console.log(value));
+    let next_box = get_next_box();
+    let relevant_harvests = next_box.then(value => get_relevant_harvests(value));
+    let relevant_boxes = relevant_harvests.then(value => get_relevant_boxes_with_counts(value));
+    relevant_boxes.then(value => console.log(value));
+}
+
+UPDATE_boxes_harvests_ALGORITHM();
+
+
+function zzz(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function sleep() {
+    await zzz(2000);
+}
+
