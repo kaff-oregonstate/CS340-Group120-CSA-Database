@@ -354,6 +354,7 @@ function func_INSERT_harvests(req, res, next) {
                 console.log(err);
                 return;
             }
+            audit_Boxes_Harvests();
             // on return, send good response back
             res.type('text/plain');
             res.status(200);
