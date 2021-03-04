@@ -533,11 +533,9 @@ app.post('/INSERT-box', function(req, res, next){
         console.log(err);
         return;
       }
-      content.boxes = rows;
-      console.log(rows.length)
-      console.log(content)
-  
-    res.render('admin-boxes-view', content);
+      res.type('text/plain');
+      res.status(200);
+      res.send('200 - good INSERT');
 
     });
     
