@@ -48,15 +48,8 @@ app.use(CORS());
 // const session = require('express-session');
 // app.use(session({secret: 'verySecretPassword'}));
 
-const mysql = require('mysql');
-const pool = mysql.createPool({
-    connectionLimit:    10,
-    host:               'classmysql.engr.oregonstate.edu',
-    user:               'cs340_kaffs',
-    password:           'sP6ptfbWuXAU54w',
-    database:           'cs340_kaffs'
-});
-module.exports.pool = pool;
+var mysql = require('./resources/js/dbcon.js');
+const pool = mysql.pool;
 
 //================================================================//
 
@@ -82,7 +75,7 @@ app.get('/farmer-view-produce-on-hand', func_farmer_view_produce);
 app.get('/farmer-add-new-crop-type', func_add_new_crop_type)
 
 //routes for box packer
-app.get('/box-packer', funcBoxPacker);
+app.get('/box-packer', func_box_packer);
 
 //routes for admin page and sub-pages
 app.get('/admin', funcAdmin);
@@ -126,9 +119,6 @@ function func_farmer_new_crop_rows(req, res){
     pool.query(
         get_crop_types_query,
         function(err, result){
-            // on return:
-                // push results into content
-                // render farmer-plant-new-row
             content.crop_types = result;
             res.render('farmer-plant-new-row', content);
         }
@@ -171,14 +161,7 @@ function func_farmer_view_rows(req, res){
     pool.query(
         get_crop_rows_query,
         function(err, result){
-            // on return:
-                // push results into content
-                // convert the dates to DateStrings for js
-                // render farmer-view-planted-rows
             content.crop_rows = result;
-                    // for (r in content.crop_rows) {
-                    //     console.log(content.crop_rows[r]);
-                    // }
             for (i in content.crop_rows) {
                 var date = new Date(content.crop_rows[i].mature_date);
                 content.crop_rows[i].mature_date = Intl.DateTimeFormat('en-US').format(date);
@@ -201,14 +184,7 @@ function func_farmer_view_produce(req, res){
     pool.query(
         get_harvests_query,
         function(err, result){
-            // on return:
-                // push results into content
-                // convert the dates to DateStrings for js
-                // render farmer-view-planted-rows
             content.harvests = result;
-                    // for (r in content.crop_rows) {
-                    //     console.log(content.crop_rows[r]);
-                    // }
             for (i in content.harvests) {
                 var date1 = new Date(content.harvests[i].harvest_date);
                 content.harvests[i].harvest_date = Intl.DateTimeFormat('en-US').format(date1);
@@ -236,7 +212,7 @@ function func_add_new_crop_type(req, res){
 //=======// box packer page //================================//
         /////////////////////
 
-function funcBoxPacker(req, res){
+function func_box_packer(req, res){
     content = {
         title: 'Rubyfruit Farm – Box Packer',
         page_name: 'box packer',
@@ -244,7 +220,29 @@ function funcBoxPacker(req, res){
             {link: '/', page_name: 'home'}
         ]
     };
-    res.render('boxPacker', content);
+    get_closest_box(get_the_correct_today()).then(current_box => {
+    // get_closest_box(new Date('2021-06-04')).then(current_box => {
+        content.box_details = current_box;
+        get_customer_counts([current_box])
+        .then(counts => {
+            content.number_of_boxes = counts[0] - current_box.number_packed;
+            if (content.number_of_boxes == 1) content.singular = "yup";
+            if (content.number_of_boxes < 1) {
+                content.number_of_boxes = "No";
+                content.no_boxes = "double no?"
+            }
+            console.log(current_box.box_id);
+            pool.query(
+                get_box_contents_query,
+                [current_box.box_id],
+                function(err, result){
+                    if (err) {console.log(err); return;}
+                    content.box_contents = result;
+                    res.render('box-packer', content);
+                }
+            );
+        })
+    })
 }
 
 // Amelia's Pages: include pages that manage box packer & Admin
@@ -376,10 +374,14 @@ function func_boxes_view(req, res){
 const get_crop_types_query = 'SELECT crop_name, crop_id FROM Crop_Types;';
 const add_crop_row_query = "INSERT INTO Crop_Rows (`crop_id`, `mature_date`) VALUES (?, ?);";
 const get_crop_rows_query = 'SELECT row_id, Crop_Rows.crop_id, mature_date, crop_name FROM Crop_Rows LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
-const add_harvest_query = "INSERT INTO Harvests (`row_id`, `quantity`, `harvest_date`, `expiration_date`) VALUES (?, ?, ?, ?);";
-const get_harvests_query = 'SELECT harvest_id, crop_name, quantity, harvest_date, expiration_date FROM Harvests LEFT JOIN Crop_Rows ON Harvests.row_id = Crop_Rows.row_id LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
+const add_harvest_query = "INSERT INTO Harvests (`row_id`, `quantity_harvested`, `harvest_date`, `expiration_date`) VALUES (?, ?, ?, ?);";
+const get_harvests_query = 'SELECT harvest_id, crop_name, quantity_harvested, harvest_date, expiration_date FROM Harvests LEFT JOIN Crop_Rows ON Harvests.row_id = Crop_Rows.row_id LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
 const add_crop_type_query = "INSERT INTO Crop_Types (`crop_name`) VALUES (?);"
 
+const get_box_contents_query = "SELECT box_id, Boxes_Harvests.harvest_id, qty_per, crop_name FROM Boxes_Harvests LEFT JOIN Harvests ON Boxes_Harvests.harvest_id = Harvests.harvest_id LEFT JOIN Crop_Rows ON Harvests.row_id = Crop_Rows.row_id LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id WHERE `box_id` = ?;"
+
+
+const pack_boxes_query = "UPDATE Boxes SET `number_packed` = ? WHERE `box_id` = ?;"
 
 // ***** admin *****
 
@@ -436,6 +438,7 @@ function func_INSERT_harvests(req, res, next) {
                 console.log(err);
                 return;
             }
+            audit_Boxes_Harvests();
             // on return, send good response back
             res.type('text/plain');
             res.status(200);
@@ -451,6 +454,30 @@ function func_INSERT_crop_types(req, res, next) {
     pool.query(
         add_crop_type_query,
         [crop_name],
+        function(err, result){
+            if(err){
+                res.type('text/plain');
+                res.status(401);
+                res.send('401 - bad INSERT');
+                console.log(err);
+                return;
+            }
+            // on return, send good response back
+            res.type('text/plain');
+            res.status(200);
+            res.send('200 - good INSERT');
+        }
+    )
+}
+
+
+app.post('/pack-boxes', func_pack_boxes);
+function func_pack_boxes(req, res, next) {
+    var box = req.body.box_id;
+    var qty = req.body.quantity;
+    pool.query(
+        pack_boxes_query,
+        [qty, box],
         function(err, result){
             if(err){
                 res.type('text/plain');
@@ -628,3 +655,74 @@ app.listen(app.get('port'), function(){
 // check one two
 
 // extra comment
+
+
+//======================================================================//
+
+      ///////////////////////////
+     // David's scratch work. //
+    ///////////////////////////
+
+
+const audits = require('./resources/js/algorithmic_auditing.js');
+function get_the_correct_today() { return audits.get_the_correct_today(); }
+function audit_Boxes_Harvests() { return audits.audit_Boxes_Harvests(); }
+function audit_Boxes_Customers() { return audits.audit_Boxes_Customers(); }
+function get_next_box() { return audits.get_next_box(); }
+function get_customer_counts(boxes) {return audits.get_customer_counts(boxes); }
+
+
+function set_time_to_midnight(date) {
+    var date_string = date.getFullYear() + '-';
+    if ((date.getUTCMonth()+1) < 10) date_string += '0' + (date.getUTCMonth()+1) + '-';
+    else date_string += (date.getUTCMonth()+1) + '-';
+    if (date.getUTCDate() < 10) date_string += '0' + (date.getUTCDate());
+    else date_string += (date.getUTCDate());
+    date_string += 'T00:00:00.000';
+    let offset = date.getTimezoneOffset() * 60 * 1000;
+    date = new Date(date_string);
+    return new Date(date.getTime() - offset);
+}
+
+function get_closest_box_helper(results, date) {
+    date = set_time_to_midnight(date);
+    var next_box;
+    var next_box_date = 0;
+    for (r in results) {
+        var box_date = new Date(results[r].box_date);
+        offset = box_date.getTimezoneOffset() * 60 * 1000;
+        box_date = new Date(box_date.getTime() - offset);
+        if (box_date.valueOf() >= date.valueOf()) {
+            if (box_date.valueOf() < next_box_date.valueOf() || next_box_date == 0) {
+                next_box = results[r];
+                next_box_date = box_date;
+            }
+        }
+    }
+    return next_box;
+}
+
+function get_closest_box(date) {
+    return new Promise(function(resolve, reject) {
+        pool.query(
+            "SELECT * FROM Boxes",
+            function(err, result){
+                if (err) reject(err);
+                else resolve(get_closest_box_helper(result, date));
+            }
+        )
+    });
+}
+
+audit_Boxes_Harvests();
+
+function zzz(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function sleep() {
+    await zzz(2000);
+}
+async function slep() {
+    await zzz(200);
+}
+
