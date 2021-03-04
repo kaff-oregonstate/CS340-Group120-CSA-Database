@@ -506,16 +506,29 @@ app.post('/INSERT-box', function(req, res, next){
         console.log(err);
         return;
       }
-      res.type('text/plain');
-      res.status(200);
-      res.send('200 - good INSERT');
+      content.boxes = rows;
+      console.log(rows.length)
+      console.log(content)
+  
+    res.render('admin-boxes-view', content);
+
     });
     
   });
 
 
 
+//CHANGE TO GET REQUEST
 app.post('/SEARCH-customer', func_SEARCH_customer);
+
+content = {
+    title: 'Rubyfruit Farm - Boxes',
+    page_name: 'view and add boxes',
+    breadcrumbs: [
+        {link: '/', page_name: 'home'},
+        {link: '/admin', page_name: 'admin'}
+    ]
+};
 
 function func_SEARCH_customer(req, res, next){
     var {first_name, last_name} = req.body
