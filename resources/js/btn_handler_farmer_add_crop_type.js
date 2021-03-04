@@ -47,6 +47,7 @@ function func_INSERT_crop_types() {
             return
         }
     });
+    
     envelope.send(JSON.stringify(new_crop_type));
     notify_user('sending_request', "Sending Request, please wait...");
 }

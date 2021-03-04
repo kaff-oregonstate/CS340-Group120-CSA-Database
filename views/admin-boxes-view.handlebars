@@ -29,10 +29,12 @@
                     <th>Pickup Date:</th>
                 </thead>
                 <tbody>
+                    {{#each boxes}}
                     <tr>
-                        <td>43</td>
-                        <td>02/24/2021</td>
+                        <td>{{box_id}}</td>
+                        <td>{{moment box_date format="MM/DD/YYYY"}}</td>
                     </tr>
+                    {{/each}}
                 </tbody>
             </table>
         </div>
@@ -55,11 +57,11 @@
                     {{!-- pickup date --}}
                     <div class="form-group col-md-6 mb-3">
                         <label for="box-pickup-date">Pickup Date for New Box:</label>
-                        <input class="form-control" type="date" name="date-to-harvest" id="box-pickup-date">
+                        <input id="box-date" class="form-control" type="date" name="date-to-harvest" id="box-pickup-date">
                     </div>
                 </div>
 
-                <button class="btn btn-green" type="submit" onclick="funcNewBox()">Submit</button>
+                <button id="add-box" class="btn btn-green" type="button" >Submit</button>
             </form>
 
         </div>
@@ -67,5 +69,4 @@
 
 </div>
 
-
-<script src="/source/js/boxViewButtonsHandler.js" charset="utf-8" id="boxViewButtonsHandler"></script>
+<script src="/source/js/admin_view_boxes.js" charset="utf-8" id="adminButtonsHandler"></script>
