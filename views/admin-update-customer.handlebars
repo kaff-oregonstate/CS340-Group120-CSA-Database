@@ -1,0 +1,78 @@
+<!-- admin2.handlebars -->
+
+<div class="container-lg">
+
+    <h5 class="mx-4">Update Subscription</h5>
+
+    <div class="card text-center bg-green m-3" style="width: auto;">
+        <div class="card-body">
+            {{!-- creates form to search for customer using their first name, last name, and the date when their subscription began --}}
+            <form class="text-left" action="">
+                <div class="form-row">
+                    {{!-- customer first name input --}}
+                    <div class="form-group col-md-6 mb-3" style="width: auto;">
+                        <label for="first-name-search">First Name</label>
+                        <input type="text" class="form-control" id="first-name-search" default="" placeholder="First Name">
+                    </div>
+                    {{!-- customer last name input --}}
+                    <div class="form-group col-md-6 mb-3" style="width: auto;">
+                        <label for="last-name-search">Last Name</label>
+                        <input type="text" class="form-control" id="last-name-search" default="" placeholder="Last Name">
+                    </div>
+                    {{!-- customer subscription start date
+                    <div class="form-group col-md-4 mb-3">
+                        <label for="date-paid">Subscription End Date</label>
+                        <input id="date-paid-search" class="form-control" type="date" name="date-paid-search">
+                    </div> --}}
+                </div>
+                {{!-- when the information in the form is filled out, the search_cust() will generate a list of customers,
+                and render a table below with possible customers --}}
+                <button id="search-customer" class="btn btn-green" type="button">Search</button>
+            </form>
+            <p id="update-search-error"></p>
+        </div>
+    </div>
+
+    <div class="card text-center bg-green m-3" style="width: auto;">
+        <div class="card-body">
+            {{!-- static mock up of a table that might be generated from the search_cust() button above. It allows
+            the customer to go in and edit the data in the database of the users that resulted from the search. --}}
+            <div class="table-responsive">
+                <p id="update-delete-error"></p>
+                <table class="table table-sm table-light">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">First</th>
+                            <th scope="col">Last</th>
+                            <th scope="col">Subscription End Date</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="update-delete-table">
+                        {{#each customers}}   
+                        <tr data-customer="{{customer_id}}" >
+                            <td>
+                                <input type="text" name="first-name-action" id="first-name-action" value="{{first_name}}" disabled="true">
+                            </td>
+                            <td>
+                                <input type="text" name="last-name-action" id="last-name-action" value="{{last_name}}" disabled="true">
+                            </td>
+                            <td>
+                                <input type="date" name="date-paid-action" id="date-paid-action" value="{{moment date_paid format="YYYY-MM-DD"}}" disabled="true">
+                            </td>
+                            <td>
+                                <button class="btn btn-green update-customer" type="button">Update</button>
+                                <button class="btn btn-green delete-customer" type="button">Delete</button>
+                            </td>
+                        </tr>
+                        {{/each}}    
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<script src="source/js/admin_update_customer.js" charset="utf-8" id="adminButtonsHandler"></script>

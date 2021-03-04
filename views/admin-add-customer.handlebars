@@ -1,0 +1,62 @@
+<!-- admin1.handlebars -->
+
+
+<div class="container-lg">
+    
+    <h5 class="mx-4">New Customer</h5>
+
+    <div class="card text-center bg-green m-3" style="width: auto;">
+
+        <div class="card-body">
+            <form class="text-left">
+                <div class="form-row">
+                    {{!-- customer first name input --}}
+                    <div class="form-group col-md-4 mb-3" style="width: auto;">
+                        <label for="first-name">First Name</label>
+                        <input type="text" class="form-control" id="first-name-add" placeholder="First Name">
+                    </div>
+                    {{!-- customer last name input --}}
+                    <div class="form-group col-md-4 mb-3">
+                        <label for="first-name">Last Name</label>
+                        <input type="text" class="form-control" id="last-name-add" placeholder="Last Name">
+                    </div>
+                    {{!-- customer subscription start date--}}
+                    <div class="form-group col-md-4 mb-3">
+                        <label for="subs-start-date">Subscription Start Date</label>
+                        <input class="form-control" type="date" name="date-paid-add" id="date-paid-add">  
+                    </div>
+                </div>
+
+                <button class="btn btn-green" id="submit-customer" type="button">Submit</button>
+            </form>
+            <p id="add-cust-error"></p>
+        </div>
+    </div>
+
+    <div class="card text-center bg-green m-3" style="width: auto;">
+
+        <div class="card-body">
+
+                <table class="table" id="add_cust_table">
+                        <thead> 
+                            <th>First Name</th> 
+                            <th>Last Name</th> 
+                            <th>Subscription Date</th> 
+                        </thead> 
+                            <tbody> 
+                                {{#each customers}} 
+                                <tr> 
+                                    <td>{{first_name}}</td> 
+                                    <td>{{last_name}}</td> 
+                                    <td>{{date_paid}}</td> 
+                                </tr> 
+                                {{/each}} 
+                            </tbody> 
+                </table>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="/source/js/admin_add_customer.js" charset="utf-8" id="adminButtonsHandler"></script>
