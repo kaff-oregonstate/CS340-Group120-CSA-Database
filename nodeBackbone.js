@@ -231,7 +231,6 @@ function func_box_packer(req, res){
                 content.number_of_boxes = "No";
                 content.no_boxes = "double no?"
             }
-            console.log(current_box.box_id);
             pool.query(
                 get_box_contents_query,
                 [current_box.box_id],
@@ -272,7 +271,7 @@ function func_add_customer(req, res, next){
         {link: '/admin', page_name: 'admin'}
     ]
   };
- 
+
   //query the server for the data in customers table, store in rows
   pool.query(get_all_customers, (err, rows) =>{
     console.log("ADD customer ROUTE.... (1)")
@@ -303,7 +302,7 @@ function func_add_customer(req, res, next){
 }
 
 function func_update_customer(req,res){
-  
+
   content = {
     title: "Rubyfruit Farm - Update Customer",
     page_name: "update customer",
@@ -322,7 +321,7 @@ function func_update_customer(req,res){
       console.log(err);
       return;
     }
-    
+
     //add the return to the content of the page
     content.customers = rows;
     console.log(rows.length)
@@ -355,12 +354,12 @@ function func_boxes_view(req, res){
         console.log(err);
         return;
         }
-        
+
         //add the return to the content of the page
         content.boxes = rows;
         console.log(rows.length)
         console.log(content)
-    
+
     res.render('admin-boxes-view', content);
     });
 }
@@ -511,6 +510,8 @@ app.post('/INSERT-customer', function(req, res, next){
       console.log(err);
       return;
     }
+    audit_Boxes_Customers();
+    audit_Boxes_Harvests();
     res.type('text/plain');
     res.status(200);
     res.send('200 - good INSERT');
@@ -521,7 +522,7 @@ app.post('/INSERT-customer', function(req, res, next){
 app.post('/INSERT-box', function(req, res, next){
 
     console.log("in INSERT box route ...");
-  
+
     var {box_date} = req.body;
 
     pool.query(insert_box, [box_date], (err,result) => {
@@ -533,12 +534,14 @@ app.post('/INSERT-box', function(req, res, next){
         console.log(err);
         return;
       }
+      audit_Boxes_Customers();
+      audit_Boxes_Harvests();
       res.type('text/plain');
       res.status(200);
       res.send('200 - good INSERT');
 
     });
-    
+
   });
 
 
@@ -581,7 +584,7 @@ function func_SEARCH_customer(req, res, next){
 app.put('/UPDATE-customer', func_UPDATE_customer);
 function func_UPDATE_customer(req, res, next){
     console.log("inside update route")
-    
+
     console.log(req.body)
     var {customer_id, first_name, last_name, date_paid} = req.body
     pool.query(
@@ -596,6 +599,8 @@ function func_UPDATE_customer(req, res, next){
                 console.log(err);
                 return;
               }
+              audit_Boxes_Customers();
+              audit_Boxes_Harvests();
               console.log("successful update")
               res.type('text/plain');
               res.status(200);
@@ -607,7 +612,7 @@ app.post('/DELETE-customer:id', func_DELETE_customer);
 function func_DELETE_customer(req, res, next){
     console.log("inside delete customer route")
     var customer_id = req.params.id
-    
+
     pool.query(delete_customers, [customer_id], (err, result)=>{
         if(err){
             console.log("In ERROR delete customer!");
@@ -617,6 +622,8 @@ function func_DELETE_customer(req, res, next){
             console.log(err);
             return;
           }
+          audit_Boxes_Customers();
+          audit_Boxes_Harvests();
           console.log("good delete")
           res.type('text/plain');
           res.status(200);
