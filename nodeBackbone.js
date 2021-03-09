@@ -31,9 +31,11 @@ const app = express();
 
 const handlebars = require('express-handlebars').create({defaultLayout:'main'});
 var helpers = require('handlebars-helpers')();
+// const path = require('path');
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
+// app.set('views', path.join(__dirname,"views")); //TESTING to fix issue
 app.use('/source', express.static('resources'));
 
 const bodyParser = require('body-parser');
@@ -325,7 +327,7 @@ function func_update_customer(req,res){
     
     //add the return to the content of the page
     content.customers = rows;
-    console.log(rows.length)
+    console.log(content)
 
 
   console.log("in update customer");
@@ -386,7 +388,7 @@ const pack_boxes_query = "UPDATE Boxes SET `number_packed` = ? WHERE `box_id` = 
 // ***** admin *****
 
 // update customer page
-const search_customers = "SELECT customer_id, first_name, last_name, date_paid FROM Customers WHERE first_name=?, last_name=?;"
+const search_customers = "SELECT * FROM Customers WHERE first_name=? AND last_name=?;"
 const update_customers = "UPDATE Customers SET first_name=?, last_name=?, date_paid=? WHERE customer_id=?;"
 const delete_customers = "DELETE FROM Customers WHERE customer_id=?;"
 // add customer page
@@ -544,19 +546,17 @@ app.post('/INSERT-box', function(req, res, next){
 
 
 //CHANGE TO GET REQUEST
-app.post('/SEARCH-customer', func_SEARCH_customer);
-
-content = {
-    title: 'Rubyfruit Farm - Boxes',
-    page_name: 'view and add boxes',
-    breadcrumbs: [
-        {link: '/', page_name: 'home'},
-        {link: '/admin', page_name: 'admin'}
-    ]
-};
-
-function func_SEARCH_customer(req, res, next){
+app.post('/SEARCH-customer', function(req, res, next){
+    content = {
+        title: 'Rubyfruit Farm - Boxes',
+        page_name: 'view and add boxes',
+        breadcrumbs: [
+            {link: '/', page_name: 'home'},
+            {link: '/admin', page_name: 'admin'}
+        ]
+    };    
     var {first_name, last_name} = req.body
+
     pool.query(
         search_customers,
         [first_name, last_name],
@@ -569,13 +569,13 @@ function func_SEARCH_customer(req, res, next){
                 console.log(err);
                 return;
               }
-              console.log("successful search")
-              res.type('text/plain');
-              res.status(200);
-              res.send('200 - good search');
+              content.customers = result;
+              console.log("Success in search")
+              console.log(content)
+              res.render('admin-update-customer', content)
         });
 
-}
+});
 
 
 app.put('/UPDATE-customer', func_UPDATE_customer);

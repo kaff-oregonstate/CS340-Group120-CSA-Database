@@ -25,8 +25,8 @@ const getData_update_delete_customer = async () => {
     xhr.onload = function(){
         if(xhr.status === 200){
             console.log("in onload ud");
-            // console.log(xhr.response);
-            // //store contents of customer table in variable
+            console.log(xhr.response);
+            // store contents of customer table in variable
             // var customer_rows = xhr.response;
             // console.log(customer_rows);
         }
@@ -71,6 +71,9 @@ async function search_customer(event){
     xhr.addEventListener('load', function(){
         if(xhr.status >= 200 && xhr.status < 400){
             console.log("inside load event listener --- search customer!");
+            //FIX THIS PROBLEM GOING FORWARD
+            document.querySelector('html').innerHTML = xhr.response
+            
         } else {
             console.log("Error in network request: " + xhr.statusText);
         }
