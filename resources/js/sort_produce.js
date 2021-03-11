@@ -21,7 +21,6 @@ sort_selector.addEventListener('change', (event)=> {
 
 function sort_by(type) {
     rows = get_the_rows()
-    // if (first_sort) {
     rows = sort_the_rows(rows, type)
     wipe_the_rows()
     paste_the_rows(rows)
@@ -66,7 +65,6 @@ function sort_the_rows(rows, type) {
 
 function get_the_rows() {
     let tbody = document.getElementsByTagName('tbody')[0]
-    // let properties = ["", "row_id", "", "crop_id", "", "crop_name", "", "mature_date"]
     let properties = []
     if (first_sort) properties = ["", "harvest_id", "", "crop_name", "", "quantity", "", "harvest_date", "", "expiration_date"]
     else properties = ["harvest_id", "crop_name", "quantity", "harvest_date", "expiration_date"]
@@ -74,14 +72,10 @@ function get_the_rows() {
     for (t = 0; t < tbody.childNodes.length; t++) {
         if (!first_sort || t % 2 == 1) {
         console.log(tbody.childNodes[t]);
-        // if (t % 2 == 1) {
         let row = {}
         for (i in properties) {
             if (!first_sort || i % 2 == 1) {
-            // console.log(tbody.childNodes[t].childNodes[i]);
-            // if (first_sort)
             row[properties[i]] = tbody.childNodes[t].childNodes[i].innerText
-            // }
             }
         }
         rows.push(row)
