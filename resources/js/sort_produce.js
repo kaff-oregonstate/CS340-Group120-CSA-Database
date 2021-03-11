@@ -112,6 +112,7 @@ function compare_rows_by_date_2(a, b) {
 }
 
 function compare_rows_by_crop(a,b) {
+    if (a.crop_name == "NULL") return 1
     if (a.crop_name < b.crop_name) return -1
     if (a.crop_name > b.crop_name) return 1
     return 0
