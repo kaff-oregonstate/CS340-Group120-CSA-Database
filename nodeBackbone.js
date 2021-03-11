@@ -75,6 +75,7 @@ app.get('/farmer-harvest-new-row', func_farmer_new_harvest);
 app.get('/farmer-view-planted-rows', func_farmer_view_rows);
 app.get('/farmer-view-produce-on-hand', func_farmer_view_produce);
 app.get('/farmer-add-new-crop-type', func_add_new_crop_type)
+app.use('/farmer-spoil-row', require('./spoil-row.js'))
 
 //routes for box packer
 app.get('/box-packer', func_box_packer);
@@ -192,6 +193,7 @@ function func_farmer_view_produce(req, res){
                 content.harvests[i].harvest_date = Intl.DateTimeFormat('en-US').format(date1);
                 var date2 = new Date(content.harvests[i].expiration_date);
                 content.harvests[i].expiration_date = Intl.DateTimeFormat('en-US').format(date2);
+                if (content.harvests[i].row_id == null) content.harvests[i].nulled = 'true';
             }
             res.render('farmer-view-produce-on-hand', content);
         }
@@ -262,7 +264,7 @@ function funcAdmin(req, res){
 }
 
 function func_add_customer(req, res, next){
-  console.log("ADD customer ROUTE....")
+  // console.log("ADD customer ROUTE....")
 
   //add title to page content
   content = {
@@ -276,7 +278,7 @@ function func_add_customer(req, res, next){
 
   //query the server for the data in customers table, store in rows
   pool.query(get_all_customers, (err, rows) =>{
-    console.log("ADD customer ROUTE.... (1)")
+    // console.log("ADD customer ROUTE.... (1)")
     if(err){
       console.log("In ERROR in add customer!");
       res.type('text/plain');
@@ -285,10 +287,10 @@ function func_add_customer(req, res, next){
       console.log(err);
       return;
     }
-    console.log("ADD customer ROUTE.... (2)");
+    // console.log("ADD customer ROUTE.... (2)");
     //add the return to the content of the page
     content.customers = rows;
-    console.log(rows.length)
+    // console.log(rows.length)
 
     for (i in content.customers) {
       var date1 = new Date(content.customers[i].date_paid);
@@ -297,7 +299,7 @@ function func_add_customer(req, res, next){
 
     //render the page with the content from the server
     res.render('admin-add-customer', content);
-    console.log("ADD customer ROUTE.... (3)");
+    // console.log("ADD customer ROUTE.... (3)");
 
   });
 
@@ -326,10 +328,10 @@ function func_update_customer(req,res){
 
     //add the return to the content of the page
     content.customers = rows;
-    console.log(content)
+    // console.log(content)
 
 
-  console.log("in update customer");
+  // console.log("in update customer");
   res.render('admin-update-customer', content);
 
   });
@@ -337,7 +339,7 @@ function func_update_customer(req,res){
 
 function func_boxes_view(req, res){
 
-    console.log('In boxes view route')
+    // console.log('In boxes view route')
     content = {
         title: 'Rubyfruit Farm - Boxes',
         page_name: 'view and add boxes',
@@ -376,7 +378,7 @@ const get_crop_types_query = 'SELECT crop_name, crop_id FROM Crop_Types;';
 const add_crop_row_query = "INSERT INTO Crop_Rows (`crop_id`, `mature_date`) VALUES (?, ?);";
 const get_crop_rows_query = 'SELECT row_id, Crop_Rows.crop_id, mature_date, crop_name FROM Crop_Rows LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
 const add_harvest_query = "INSERT INTO Harvests (`row_id`, `quantity_harvested`, `harvest_date`, `expiration_date`) VALUES (?, ?, ?, ?);";
-const get_harvests_query = 'SELECT harvest_id, crop_name, quantity_harvested, harvest_date, expiration_date FROM Harvests LEFT JOIN Crop_Rows ON Harvests.row_id = Crop_Rows.row_id LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
+const get_harvests_query = 'SELECT harvest_id, crop_name, quantity_harvested, harvest_date, expiration_date, Harvests.row_id FROM Harvests LEFT JOIN Crop_Rows ON Harvests.row_id = Crop_Rows.row_id LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
 const add_crop_type_query = "INSERT INTO Crop_Types (`crop_name`) VALUES (?);"
 
 const get_box_contents_query = "SELECT box_id, Boxes_Harvests.harvest_id, qty_per, crop_name FROM Boxes_Harvests LEFT JOIN Harvests ON Boxes_Harvests.harvest_id = Harvests.harvest_id LEFT JOIN Crop_Rows ON Harvests.row_id = Crop_Rows.row_id LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id WHERE `box_id` = ?;"
@@ -500,7 +502,7 @@ function func_pack_boxes(req, res, next) {
 
 app.post('/INSERT-customer', function(req, res, next){
 
-  console.log("in INSERT CUSTOMER route ...");
+  // console.log("in INSERT CUSTOMER route ...");
 
   var {first_name, last_name, date_paid} = req.body;
   pool.query(insert_customers, [first_name, last_name, date_paid], (err,result) => {
@@ -518,12 +520,12 @@ app.post('/INSERT-customer', function(req, res, next){
     res.status(200);
     res.send('200 - good INSERT');
   });
-  console.log("outside query in insert customer");
+  // console.log("outside query in insert customer");
 });
 
 app.post('/INSERT-box', function(req, res, next){
 
-    console.log("in INSERT box route ...");
+    // console.log("in INSERT box route ...");
 
     var {box_date} = req.body;
 
@@ -557,7 +559,7 @@ app.post('/SEARCH-customer', function(req, res, next){
             {link: '/', page_name: 'home'},
             {link: '/admin', page_name: 'admin'}
         ]
-    };    
+    };
     var {first_name, last_name} = req.body
 
     pool.query(
@@ -573,7 +575,7 @@ app.post('/SEARCH-customer', function(req, res, next){
                 return;
               }
               content.customers = result;
-              console.log("Success in search")
+              // console.log("Success in search")
               console.log(content)
               res.render('admin-update-customer', content)
         });
@@ -583,7 +585,7 @@ app.post('/SEARCH-customer', function(req, res, next){
 
 app.put('/UPDATE-customer', func_UPDATE_customer);
 function func_UPDATE_customer(req, res, next){
-    console.log("inside update route")
+    // console.log("inside update route")
 
     console.log(req.body)
     var {customer_id, first_name, last_name, date_paid} = req.body
@@ -601,7 +603,7 @@ function func_UPDATE_customer(req, res, next){
               }
               audit_Boxes_Customers();
               audit_Boxes_Harvests();
-              console.log("successful update")
+              // console.log("successful update")
               res.type('text/plain');
               res.status(200);
               res.send('200 - good update');
@@ -610,7 +612,7 @@ function func_UPDATE_customer(req, res, next){
 
 app.post('/DELETE-customer:id', func_DELETE_customer);
 function func_DELETE_customer(req, res, next){
-    console.log("inside delete customer route")
+    // console.log("inside delete customer route")
     var customer_id = req.params.id
 
     pool.query(delete_customers, [customer_id], (err, result)=>{
@@ -624,7 +626,7 @@ function func_DELETE_customer(req, res, next){
           }
           audit_Boxes_Customers();
           audit_Boxes_Harvests();
-          console.log("good delete")
+          // console.log("good delete")
           res.type('text/plain');
           res.status(200);
           res.send('200 - good delete');
