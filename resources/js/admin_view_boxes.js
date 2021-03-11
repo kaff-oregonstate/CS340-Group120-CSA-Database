@@ -24,7 +24,7 @@ async function get_boxes(){
 
         }
     };
-    
+
     //prepare request using open(http method, url of page, boolean value for async)
     xhr.open('GET','/admin-boxes-view', true);
     xhr.send(null);
@@ -38,9 +38,9 @@ async function add_box(event){
     //generate payload with new customer input
     var payload = {};
     payload.box_date = document.getElementById('box-date').value
-    
-    console.log(payload)
-    
+
+    // console.log(payload)
+
     //check that user has filled out all inputs in add customer form
     if(isError(payload)){
         console.log("ERROR IN PAYLOAD--new box")
@@ -81,3 +81,44 @@ function isError(obj){
     console.log("returning false");
     return false;
 }
+
+
+
+// by david
+
+// to add view box by date functionality
+
+const sort_selector = document.querySelector('#select-box-date')
+
+sort_selector.addEventListener('change', (event)=> {
+    date_for_find = event.target.value
+    get_box_with_details(date_for_find)
+    .then(box_details => present_box(box_details))
+})
+
+function present_box(box_details) {
+    console.log(box_details);
+}
+
+function get_box_with_details(box_date) {
+    return new Promise(function(resolve, reject) {
+        let letter = {};
+        letter.box_date = box_date;
+        let envelope = new XMLHttpRequest();
+        envelope.open('POST','/admin-boxes-view/details',true);
+        envelope.setRequestHeader("Content-Type", "application/json");
+        envelope.addEventListener('load',function(){
+            if(envelope.status >=200 && envelope.status < 400){
+                // reload page
+                console.log('good return!');
+                resolve(JSON.parse(envelope.responseText));
+            } else {
+                // log request error
+                console.log("Error in network request: " + envelope.statusText)
+                reject(envelope.statusText)
+            }
+        });
+        envelope.send(JSON.stringify(letter));
+    });
+}
+

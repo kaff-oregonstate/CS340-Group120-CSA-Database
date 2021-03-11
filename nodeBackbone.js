@@ -75,6 +75,7 @@ app.get('/farmer-harvest-new-row', func_farmer_new_harvest);
 app.get('/farmer-view-planted-rows', func_farmer_view_rows);
 app.get('/farmer-view-produce-on-hand', func_farmer_view_produce);
 app.get('/farmer-add-new-crop-type', func_add_new_crop_type)
+
 app.use('/farmer-spoil-row', require('./spoil-row.js'))
 
 //routes for box packer
@@ -85,6 +86,8 @@ app.get('/admin', funcAdmin);
 app.get('/admin-add-customer',func_add_customer);
 app.get('/admin-update-customer',func_update_customer);
 app.get('/admin-boxes-view',func_boxes_view);
+
+app.use('/admin-boxes-view/details', require('./view-box-details.js'))
 
 function funcHome(req, res){
     content = {
@@ -361,8 +364,8 @@ function func_boxes_view(req, res){
 
         //add the return to the content of the page
         content.boxes = rows;
-        console.log(rows.length)
-        console.log(content)
+        // console.log(rows.length)
+        // console.log(content)
 
     res.render('admin-boxes-view', content);
     });
