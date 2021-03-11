@@ -87,7 +87,7 @@ function prompt_for_confirmation(row_id, harvests) {
     row = entry_form.appendChild(document.createElement('div'));
     row.setAttribute("class", "form-row");
     group = row.appendChild(document.createElement('div'));
-    group.setAttribute("class", "form-group mb-3");
+    group.setAttribute("class", "form-group col-md mb-3");
     prompt_user('confirm_button', "Yes, I'm sure.", "confirm_DELETE_crop_row(" + row_id + ")");
     prompt_user('deny_button', "Nevermind.", "cancel_DELETE_crop_row()");
 }
@@ -166,7 +166,7 @@ function notify_user(notification_id, notification_text) {
 
 
 function prompt_user(button_id, button_text, button_fn) {
-    form_row = document.getElementsByTagName('form')[0].lastChild;
+    form_row = document.getElementsByTagName('form')[0].lastChild.lastChild;
     button = form_row.appendChild(document.createElement('input'));
     button.setAttribute('type', "button");
     button.setAttribute('class', "btn btn-green")
