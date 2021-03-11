@@ -30,7 +30,11 @@
                         {{#each harvests}}
                         <tr>
                             <td hidden name="harvest_id">{{this.row_id}}</td>
+                            {{#if nulled}}
+                            <td name="crop_name">NULL</td>
+                            {{else}}
                             <td name="crop_name">{{this.crop_name}}</td>
+                            {{/if}}
                             <td name="quantity">{{this.quantity_harvested}}</td>
                             <td name="harvest_date">{{this.harvest_date}}</td>
                             <td name="expiration_date">{{this.expiration_date}}</td>
