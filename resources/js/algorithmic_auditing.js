@@ -414,14 +414,11 @@ function removeItemOnce(arr, value) {
   return arr;
 }
 
-const gnb = () => {
-    return get_next_box();
-}
 
 module.exports = {
     audit_Boxes_Harvests: audit_Boxes_Harvests,
     audit_Boxes_Customers: audit_Boxes_Customers,
     get_the_correct_today: get_the_correct_today,
-    get_next_box: gnb,
+    get_next_box: get_next_box,
     get_customer_counts: get_customer_counts
 };

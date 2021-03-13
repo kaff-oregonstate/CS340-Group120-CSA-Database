@@ -1,0 +1,27 @@
+<!-- farmer-spoil-row.handlebars -->
+
+<div class="container-lg">
+    <h5 class="mx-4">Spoil Row:</h5>
+
+    <div class="card text-center bg-green m-3" style="width: auto;">
+        <div class="card-body">
+            <form class="text-left" action="">
+                <div class="form-row">
+                    <div class="form-group col-md-9 mb-3" style="width: auto;">
+                        <label for="row-to-spoil">Row to be spoiled</label>
+                        <select class="form-control" id="row-to-spoil">
+                            {{#each crop_rows}}
+                            <option value="{{this.row_id}}">{{this.crop_name}} (expected to harvest on {{this.mature_date}})</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-3 mb-3" style="padding-top:2.55rem">
+                        <input type="button" class="btn btn-green" onclick="func_DELETE_crop_row()" id="INSERT_button" value="Submit">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/source/js/btn_handler_farmer_spoil_row.js" charset="utf-8" id="btn_handler"></script>
