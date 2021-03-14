@@ -2,60 +2,26 @@
 // name: admin_update_customer.js, creator: Amelia Walsh, date: 1/31/21
 // handles buttons within the admin update customer handlebars
 
-// const baseUrl = 'http://flip3.engr.oregonstate.edu:3891/'
-const baseUrl = "http://localhost:28394/";
+// ///////////////////////////////////
+//   ADMIN PAGE -- Update/Delete
+// //////////////////////////////////
 
-// ///////////////////////
-//      ADMIN PAGE
-// ///////////////////////
-
-// *********************************
-// ***** Update/Delete Customer ****
-// *********************************
-
-//send http request to the route that renders update customer page 
-//and populates it with the data from the customer table
-const getData_update_delete_customer = async () => {
-    console.log("getData ROUTE update/delete ...")
-
-    //create request object
-    let xhr = new XMLHttpRequest();
-    
-    //when server responds
-    xhr.onload = function(){
-        if(xhr.status === 200){
-            console.log("in onload ud");
-            console.log(xhr.response);
-            // store contents of customer table in variable
-            // var customer_rows = xhr.response;
-            // console.log(customer_rows);
-        }
-    };
-
-    //prepare request using open(http method, url of page, boolean value for async)
-    xhr.open('GET', '/admin-update-customer', true);
-    xhr.send(null);
-
-}
-
+// ***************************************
+// ********** Search Customers ***********
+// ***************************************
 
 //event listener for clicks on the search customer button
 document.querySelector('#search-customer').onclick = search_customer;
 
 async function search_customer(event){
 
-    console.log("admin_update_customer-js--inside search customer!")
-
     //generate payload with new customer input
     var payload = {};
     payload.first_name = document.getElementById('first-name-search').value
     payload.last_name = document.getElementById('last-name-search').value
 
-    console.log(payload)
-
     //check that user has filled out all inputs in add customer form
     if(isError(payload)){
-        console.log("ERROR IN PAYLOAD -- search_customer ")
         $("#update-search-error").html("Please fill out all the fields before submitting.");
         return
     }
@@ -70,9 +36,12 @@ async function search_customer(event){
 
     xhr.addEventListener('load', function(){
         if(xhr.status >= 200 && xhr.status < 400){
-            console.log("inside load event listener --- search customer!");
-            //FIX THIS PROBLEM GOING FORWARD
-            document.querySelector('html').innerHTML = xhr.response
+            //empty all customers table, to replace with search results
+            document.getElementById("update-delete-table").innerHTML = "";
+
+            //store customers in variable, create new table-body with search data
+            var customers = JSON.parse(xhr.response)
+            make_search_table(customers)
             
         } else {
             console.log("Error in network request: " + xhr.statusText);
@@ -85,14 +54,14 @@ async function search_customer(event){
 }
 
 
+// *********************************************
+// ************ Update/Delete Customers ********
+// *********************************************
+//event listener for clicks in the body of the customer update and delete table
+document.querySelector('#update-delete-table').addEventListener('click', click_ud_table)
 
-window.onload = function(){
-    //event listener for clicks in the body of the customer update and delete table
-    document.querySelector('#update-delete-table').addEventListener('click', click_ud_table)
-}
 
 async function click_ud_table(event){
-    console.log("CLICK EVENT -- update table")
     //save location of user click in target
     var target = event.target;
     
@@ -110,7 +79,7 @@ async function click_ud_table(event){
                 toggle_button(target)
             
             }else{
-                toggle_button(target)
+                // toggle_button(target)
                 update_customer(target, customer_id)
             }
 
@@ -121,13 +90,11 @@ async function click_ud_table(event){
     }
 }
 
-
+// ~~~~~~~UPDATE CUSTOMER~~~~~~~
 //function associated with update button click:
 //this function packages the changes the user made to the customer
 //and sends them to the server in an HTTP request.
 async function update_customer(target, customer_id){
-
-    console.log("INSIDE UPDATE CUSTOMER")
 
     var first_name_input = target.parentNode.parentNode.children[0].children[0]
     var last_name_input = target.parentNode.parentNode.children[1].children[0]
@@ -141,16 +108,17 @@ async function update_customer(target, customer_id){
     payload.last_name = last_name_input.value
     payload.date_paid = date_input.value
 
-    console.log(payload)
-
-    // console.log(payload)
-
     //error handling of updated customer input
     if(isError(payload)){
-        console.log("ERROR IN PAYLOAD update customer")
-        $("#update-delete-error").html("Please fill out all the fields before submitting")
+        $("#update-delete-error").html("Please fill out all the fields before submitting.")
         return
     }
+
+    //if all fields are filled out switch button to update & send request
+    toggle_button(target)
+    
+    // remove error message
+    $("#update-delete-error").html("")
 
     //create HTTP request object and open request
     let xhr = new XMLHttpRequest();
@@ -160,7 +128,6 @@ async function update_customer(target, customer_id){
     //event listener for response from server
     xhr.addEventListener('load', function(){
         if(xhr.status >= 200 && xhr.status < 400){
-            console.log("inside update server return successful!");
         } else {
             console.log("Error in network request: " + xhr.statusText);
         }
@@ -171,12 +138,8 @@ async function update_customer(target, customer_id){
 
 }
 
+// ~~~~~~~DELETE CUSTOMER~~~~~~~
 async function delete_customer(customer_id){
-
-    console.log("inside delete customer function")
-
-    //are you sure you want to delete customer?
-
     //collect customer id
     var payload = {};
     payload.customer_id = customer_id
@@ -188,8 +151,7 @@ async function delete_customer(customer_id){
         //event listener for response from server
         xhr.addEventListener('load', function(){
             if(xhr.status >= 200 && xhr.status < 400){
-                console.log("inside delete customer return successful!");
-                alert("customer successfully deleted")
+                location.reload(true)
             } else {
                 console.log("Error in network request: " + xhr.statusText);
             }
@@ -200,6 +162,8 @@ async function delete_customer(customer_id){
 }
 
 
+
+// ~~~~~~~~~~~~~ERROR HANDLING~~~~~~~~~~~~~~~
 //check if form inputs have been filled out
 function isError(obj){
     for (key in obj){
@@ -207,10 +171,10 @@ function isError(obj){
             return true;
         }
     }
-    console.log("ERROR = false");
     return false;
 }
 
+//function that enables inputs in the update-delete customer table
 function enable_row(target){
     var first_name_input = target.parentNode.parentNode.children[0].children[0]
     var last_name_input = target.parentNode.parentNode.children[1].children[0]
@@ -222,6 +186,7 @@ function enable_row(target){
     date_input.disabled = false
 }
 
+//function that disables rows in update-delete table 
 function disable_row(target){
     
     var first_name_input = target.parentNode.parentNode.children[0].children[0]
@@ -234,6 +199,7 @@ function disable_row(target){
     date_input.disabled = true
 }
 
+//function that changes toggles the update button to done when it's clicked by user
 function toggle_button(target){
 
     if(target.innerHTML == "Update"){
@@ -242,4 +208,131 @@ function toggle_button(target){
         disable_row(target)
         target.innerHTML = "Update"
     }
+}
+// ******************************************************************
+// ***************** MAKE SEARCH RESULT TABLE ***********************
+// ******************************************************************
+
+//function that generates a new table body based on data returned from search query
+function make_search_table(customers){
+
+    //select the table body to add new data
+    var table_body = document.getElementById('update-delete-table')
+
+    for(i in customers){
+        //create new row for each customer in customer object
+        var new_row = document.createElement("tr")
+
+        for(key of Object.keys(customers[i])){
+            //collect customer_id, first name, last name, date paid values
+            var name = key;
+            var value = customers[i][key];
+            
+            //take the customer id value and make a dataset attribute
+            if(key == "customer_id"){
+                new_row.setAttribute("data-customer", customers[i][key])
+            }
+            
+            //store a new td cell in new_data variable
+            var new_data = make_table_data(name, value);
+
+            //if return isn't a null (customer_id) add the cell to the row
+            if(new_data){
+                new_row.appendChild(new_data)
+            }
+            
+        }
+
+        //add update/delete buttons to each customer row
+        var action_column = make_buttons();
+        new_row.appendChild(action_column)
+
+        //add the generated row to the table
+        table_body.appendChild(new_row)
+        
+    }
+}
+
+//generate cells for the search specific customer table
+function make_table_data(name,value){
+    var new_data = null;
+
+    //create a new cell for all data except for customer_id values
+    if(name != "customer_id"){
+        new_data = document.createElement("td");
+    }
+
+    //generate and input value using the name, value of the data
+    var new_input = make_input(name,value);
+
+    //if the generated input exists (not customer_id), add it to the td element
+    if(new_input){
+        new_data.appendChild(new_input);
+    }
+
+    return new_data;
+
+}
+
+
+//function responsible for generating input fields for the customer search table
+function make_input(name,value){
+    var type = null;
+    var id = null;
+    //determine type of input for each data type
+    switch(name){
+        case "customer_id":
+            type = "id";
+            break;
+        case "first_name":
+            var input = document.createElement("input");
+            type = "text";
+            id="first-name-action";
+            break;
+        case "last_name":
+            var input = document.createElement("input");
+            type = "text";
+            id="last-name-action";
+            break;
+        case "date_paid":
+            var input = document.createElement("input");
+            type = "date";
+            id="date-paid-action";
+            value = value.slice(0,10);
+            break;
+    }
+
+    //if not customer id make input and add attributes
+    if(type!= null && type!= "id"){
+        input.setAttribute("type", type);
+        input.setAttribute("id", id);
+        input.setAttribute("disabled", "true");
+        input.defaultValue = value;
+        return input;
+    }
+
+}
+
+//function responsible for adding update/delete buttons to the search results table
+function make_buttons(){
+
+    //generate Action column with td and button elements
+    var action_column = document.createElement("td");
+    var update_button = document.createElement("button");
+    var delete_button = document.createElement("button");
+
+    //add the update button
+    update_button.setAttribute("class" , "btn btn-green update-customer")
+    update_button.setAttribute("type", "button")
+    update_button.innerHTML = "Update"
+    action_column.appendChild(update_button)
+
+    //add the delete button
+    delete_button.setAttribute("class" , "btn btn-green delete-customer")
+    delete_button.setAttribute("type", "button")
+    delete_button.innerHTML = "Delete" 
+    action_column.appendChild(delete_button)
+
+    return action_column;
+
 }
