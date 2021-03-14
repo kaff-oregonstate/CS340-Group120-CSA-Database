@@ -14,11 +14,20 @@
                     {{!-- pickup date --}}
                     <div class="form-group col-md-6 mb-3">
                         <label for="select-box-date">Find Info for Box Closest To Day:</label>
-                        <input class="form-control" type="date" name="date-to-harvest" id="select-box-date">
+                        <input class="form-control" type="date" id="select-box-date">
+                        <input type="button" class="btn btn-green" style="margin-top:.4rem; float: right;" onclick="get_box_with_details_by_date()" name="get_box_by_date" value="Get Info">
+                    </div>
+                    {{!-- box select --}}
+                    <div class="form-group col-md-6 mb-3">
+                        <label for="select-box-id">Find Info for Box From List:</label>
+                        <select class="form-control" id="select-box-id">
+                            {{#each boxes}}
+                            <option value="{{this.box_id}}">Box for week of {{moment this.box_date format="MM/DD/YYYY"}}</option>
+                            {{/each}}
+                        </select>
+                        <input type="button" class="btn btn-green" style="margin-top:.4rem; float: right;" onclick="get_box_with_details_by_id()" name="get_box_by_id" value="Get Info">
                     </div>
                 </div>
-
-                <button class="btn btn-green" type="submit" onclick="funcFindBox()">Submit</button>
             </form>
 
             <br>
@@ -70,3 +79,32 @@
 </div>
 
 <script src="/source/js/admin_view_boxes.js" charset="utf-8" id="adminButtonsHandler"></script>
+
+<!-- Box Details Modal -->
+<div class="modal fade" id="box_details_modal" tabindex="-1" role="dialog" aria-labelledby="box_details_modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="box_details_modal_label">Modal title</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <div class="container-fluid">
+      <div class="row" id="box_details_row_div_1">
+          <div class="col-md-12" id="box_details_col_num_packed" style="margin-bottom: .8rem;">
+          </div>
+      </div>
+      <div class="row" id="box_details_row">
+        <p>hello</p>
+        <p>nice try</p>
+      </div>
+      </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-green" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
