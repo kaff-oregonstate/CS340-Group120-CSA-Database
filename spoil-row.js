@@ -10,6 +10,10 @@ var router = express.Router();
 var mysql = require('./resources/js/dbcon.js'); // !!!
 const pool = mysql.pool;
 
+const audits = require('./resources/js/algorithmic_auditing.js');
+function audit_Boxes_Harvests() { return audits.audit_Boxes_Harvests(); }
+function audit_Boxes_Customers() { return audits.audit_Boxes_Customers(); }
+
 router.get('/', function(req, res){
     content = {
         title: 'Rubyfruit Farm – Spoil Row + Recall Harvests',
@@ -61,6 +65,7 @@ router.post('/do', function(req, res, next){
         function(err, result) {
             if (err) console.log(err);
             else {
+                audit_Boxes_Harvests()
                 res.send("good delete");
             }
         }

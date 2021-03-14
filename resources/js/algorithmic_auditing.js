@@ -293,9 +293,9 @@ function update_B_C_on_customer(customer, boxes) {
 }
 
 function get_relevant_customers() {
-    date = new Date();
+    let date = new Date();
     date = new Date(date.valueOf() + (14 * 24 * 60 * 60 * 1000));
-    two_weeks_out = `'` + date.toISOString().substring(0,10) + `'`;
+    let two_weeks_out = `'` + date.toISOString().substring(0,10) + `'`;
     return new Promise(function(resolve, reject) {
         pool.query(
             "SELECT * FROM Customers WHERE date_paid > " + two_weeks_out + ";",
@@ -330,10 +330,11 @@ function get_boxes_B_C_links(boxes) {
 
 function get_relevant_boxes() {
     let date = get_the_correct_today();
-    let today = `'` + date.toISOString().substring(0,10) + `'`;
+    date = new Date(date.valueOf() + (14 * 24 * 60 * 60 * 1000));
+    let two_weeks_out = `'` + date.toISOString().substring(0,10) + `'`;
     return new Promise(function(resolve, reject) {
         pool.query(
-            "SELECT * FROM Boxes WHERE box_date > " + today + ";",
+            "SELECT * FROM Boxes WHERE box_date > " + two_weeks_out + ";",
             function(err, result) {
                 if (err) reject(err);
                 else {
