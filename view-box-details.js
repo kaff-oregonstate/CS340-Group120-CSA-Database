@@ -2,46 +2,80 @@
 
 const get_box_contents_query = "SELECT box_id, Boxes_Harvests.harvest_id, qty_per, crop_name FROM Boxes_Harvests LEFT JOIN Harvests ON Boxes_Harvests.harvest_id = Harvests.harvest_id LEFT JOIN Crop_Rows ON Harvests.row_id = Crop_Rows.row_id LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id WHERE `box_id` = ?;"
 
+const get_box_customers_query = "SELECT first_name, last_name, Customers.customer_id FROM Boxes_Customers LEFT JOIN Customers ON Boxes_Customers.customer_id = Customers.customer_id WHERE `box_id` = ?;"
+
 module.exports = function(){
 
 var express = require('express');
-express().use('/source', express.static('resources')); // !!!
+express().use('/source', express.static('resources'));
 var router = express.Router();
-var mysql = require('./resources/js/dbcon.js'); // !!!
+var mysql = require('./resources/js/dbcon.js');
 const pool = mysql.pool;
 
-const audits = require('./resources/js/algorithmic_auditing.js');
 
-
-router.post('/', function(req, res, next){
+router.post('/date', function(req, res, next){
     let results = {}
-    best_box = get_box(req.body.box_date)
-    contents = best_box.then(box => {
+    best_box = get_box_by_date(req.body.box_date)
+    details = best_box.then(box => {
         results.box = box
-        return get_box_contents(box)
+        return get_box_details(box)
     })
-    contents.then(result => {
-        results.contents = result
+    details.then(result => {
+        var date = new Date(results.box.box_date);
+        results.box.box_date = Intl.DateTimeFormat('en-US').format(date);
+        results.contents = result[0]
+        results.customers = result[1]
         res.send(results)
     })
-
 });
 
-function get_box_contents(best_box) {
+router.post('/id', function(req, res, next){
+    let results = {}
+    best_box = get_box_by_id(req.body.box_id)
+    details = best_box.then(box => {
+        results.box = box
+        return get_box_details(box)
+    })
+    details.then(result => {
+        var date = new Date(results.box.box_date);
+        results.box.box_date = Intl.DateTimeFormat('en-US').format(date);
+        results.contents = result[0]
+        results.customers = result[1]
+        res.send(results)
+    })
+});
+
+function get_box_details(box) {
     return new Promise(function(resolve, reject) {
-        var date = new Date(best_box.box_date);
-        date = new Date(date.valueOf() + (14 * 24 * 60 * 60 * 1000));
-        harvest_finalizer_date = `'` + date.toISOString().substring(0,10) + `'`;
-        // console.log(`Distribution of Harvests expiring b4 ${harvest_finalizer_date} is finalized, don't update.`);
+        let data = [get_box_contents(box), get_box_customers(box)];
+        Promise.all(data).then(data => {resolve(data)});
+    })
+}
+
+function get_box_contents(box) {
+    return new Promise(function(resolve, reject) {
         pool.query(
             get_box_contents_query,
-            [best_box.box_id],
+            [box.box_id],
             function(err, result) {
                 if (err) reject(err);
                 else resolve(result);
             }
         );
     });
+}
+
+function get_box_customers(box) {
+    return new Promise(function(resolve, reject) {
+        pool.query(
+            get_box_customers_query,
+            [box.box_id],
+            function(err, result) {
+                if (err) reject(err);
+                else resolve(result);
+            }
+        );
+    })
 }
 
 function set_time_to_midnight(date) {
@@ -56,7 +90,7 @@ function set_time_to_midnight(date) {
     return new Date(date.getTime() - offset);
 }
 
-function get_box_helper(search_date, results) {
+function get_box_by_date_helper(search_date, results) {
     var the_day = new Date(search_date);
     the_day = set_time_to_midnight(the_day);
     var best_box;
@@ -66,20 +100,12 @@ function get_box_helper(search_date, results) {
         var diff_1 = Math.abs(box_date_1.valueOf() - the_day.valueOf())
         var box_date_2 = new Date(results[r+1].box_date);
         var diff_2 = Math.abs(box_date_2.valueOf() - the_day.valueOf())
-
-        // console.log(`date_1 = ${box_date_1}`);
-        // console.log(`date_2 = ${box_date_2}`);
-        // console.log(`diff_1 = ${diff_1}`);
-        // console.log(`diff_2 = ${diff_2}`);
-        // console.log(``);
-
         if (diff_1 < diff_2) {
             if (diff_1 < next_date_diff || next_date_diff == 0) {
                 best_box = results[r];
                 next_date_diff = diff_1;
             }
-        }
-        else {
+        } else {
             if (diff_2 < next_date_diff || next_date_diff == 0) {
                 best_box = results[r+1];
                 next_date_diff = diff_2;
@@ -89,13 +115,26 @@ function get_box_helper(search_date, results) {
     return best_box;
 }
 
-function get_box(box_date) {
+function get_box_by_date(box_date) {
     return new Promise(function(resolve, reject) {
         pool.query(
-            "SELECT * FROM Boxes",
+            "SELECT * FROM Boxes;",
             function(err, result){
                 if (err) reject(err);
-                else resolve(get_box_helper(box_date, result));
+                else resolve(get_box_by_date_helper(box_date, result));
+            }
+        )
+    });
+}
+
+function get_box_by_id(box_id) {
+    return new Promise(function(resolve, reject) {
+        pool.query(
+            "SELECT * FROM Boxes WHERE `box_id` = ?;",
+            box_id,
+            function(err, result){
+                if (err) reject(err);
+                else resolve(result[0]);
             }
         )
     });
