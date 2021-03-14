@@ -555,14 +555,8 @@ app.post('/INSERT-box', function(req, res, next){
 
 //CHANGE TO GET REQUEST
 app.post('/SEARCH-customer', function(req, res, next){
-    content = {
-        title: 'Rubyfruit Farm - Boxes',
-        page_name: 'view and add boxes',
-        breadcrumbs: [
-            {link: '/', page_name: 'home'},
-            {link: '/admin', page_name: 'admin'}
-        ]
-    };
+
+    console.log(req.body)
     var {first_name, last_name} = req.body
 
     pool.query(
@@ -577,10 +571,10 @@ app.post('/SEARCH-customer', function(req, res, next){
                 console.log(err);
                 return;
               }
-              content.customers = result;
-              // console.log("Success in search")
-              console.log(content)
-              res.render('admin-update-customer', content)
+              
+            var search_results = JSON.stringify(result)
+            res.send(search_results)
+
         });
 
 });
@@ -675,6 +669,7 @@ app.listen(app.get('port'), function(){
 
 
 const audits = require('./resources/js/algorithmic_auditing.js');
+const { json } = require('body-parser');
 function get_the_correct_today() { return audits.get_the_correct_today(); }
 function audit_Boxes_Harvests() { return audits.audit_Boxes_Harvests(); }
 function audit_Boxes_Customers() { return audits.audit_Boxes_Customers(); }

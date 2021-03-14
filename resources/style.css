@@ -134,20 +134,22 @@ div.scrolliBoi {
 
 table {
     border-collapse: collapse;
-    border: 2px solid rgb(120,120,120);
-    /* background-color: rgb(40,40,40); */
+    /* border: 2px solid rgb(120,120,120); */
+    background-color: white;
+
+   
 }
 
 td, th {
-    border: 1px solid rgb(80,80,80);
+    /* border-bottom: 1px solid rgb(80,80,80); */
     max-height: 50px;
     padding: 8px;
 }
 
 th {
     font-weight: 600;
-    /* background-color: rgb(75,75,75); */
-    border: 1px solid rgb(120,120,120);
+    background-color:white;
+    border-bottom: 1px solid rgb(80,80,80);
 }
 
 div.editE {
@@ -246,6 +248,5 @@ button{
     background-color:#389651;
     border-color: #389651;
 }
-
 
 

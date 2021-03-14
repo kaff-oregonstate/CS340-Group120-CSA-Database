@@ -14,6 +14,7 @@
                     <div class="form-group col-md-4 mb-3" style="width: auto;">
                         <label for="first-name">First Name</label>
                         <input type="text" class="form-control" id="first-name-add" placeholder="First Name">
+
                     </div>
                     {{!-- customer last name input --}}
                     <div class="form-group col-md-4 mb-3">
@@ -23,7 +24,7 @@
                     {{!-- customer subscription start date--}}
                     <div class="form-group col-md-4 mb-3">
                         <label for="subs-start-date">Subscription End Date</label>
-                        <input class="form-control" type="date" name="date-paid-add" id="date-paid-add">  
+                        <input class="form-control" type="date" name="date-paid-add" id="date-paid-add">
                     </div>
                 </div>
 
@@ -36,12 +37,11 @@
     <div class="card text-center bg-green m-3" style="width: auto;">
 
         <div class="card-body">
-
                 <table class="table" id="add_cust_table">
-                        <thead> 
-                            <th>First Name</th> 
-                            <th>Last Name</th> 
-                            <th>Subscription End Date</th> 
+                        <thead class="thead-light"> 
+                            <th scope="col">First Name</th> 
+                            <th scope="col">Last Name</th> 
+                            <th scope="col">Subscription End Date</th> 
                         </thead> 
                             <tbody> 
                                 {{#each customers}} 
