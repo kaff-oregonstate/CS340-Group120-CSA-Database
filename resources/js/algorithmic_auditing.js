@@ -1,5 +1,11 @@
 // algorithmic_auditing.js
 
+// based on CS 361 instruction, forgoing most comments and instead naming
+    // functions verbosely.
+
+    // B_H = Boxes_Harvests
+    // B_C = Boxes_Customers
+
 var mysql = require('./dbcon.js');
 const pool = mysql.pool;
 
@@ -38,7 +44,6 @@ function get_relevant_harvests(next_box) {
         var date = new Date(next_box.box_date);
         date = new Date(date.valueOf() + (14 * 24 * 60 * 60 * 1000));
         harvest_finalizer_date = `'` + date.toISOString().substring(0,10) + `'`;
-        // console.log(`Distribution of Harvests expiring b4 ${harvest_finalizer_date} is finalized, don't update.`);
         pool.query(
             "SELECT * FROM Harvests WHERE expiration_date >= " + harvest_finalizer_date,
             function(err, result) {
@@ -51,7 +56,6 @@ function get_relevant_harvests(next_box) {
 
 
 function get_customer_counts(relevant_boxes) {
-    // console.log(relevant_boxes);
     customer_counts = relevant_boxes.map(box =>
         {return new Promise(function(resolve, reject) {
             pool.query(
@@ -68,8 +72,6 @@ function get_customer_counts(relevant_boxes) {
 
 
 function parse_boxes_for_dist(boxes, qty_left) {
-    // console.log(`boxes in parse_boxes_for_dist`);
-    // console.log(boxes);
     var today = get_the_correct_today();
     today = today.valueOf();
     let linked_box_ids = [];
@@ -77,38 +79,30 @@ function parse_boxes_for_dist(boxes, qty_left) {
         var box_date = new Date(boxes[b].box_date);
         box_date = box_date.valueOf();
         if (box_date > today + (7 * 24 * 60 * 60 * 1000)) {
-            // console.log('one box bigger than today + 7');
             linked_box_ids.push(boxes[b].box_id);
         }
         else if (box_date >= today) {
-            // console.log('one box bigger than today but smaller than today + 7');
             let allocated = boxes[b].qty_per * (boxes[b].number_of_customers - boxes[b].number_packed);
             qty_left -= allocated;
         }
-        // else console.log('one box smaller than today');
     }
     return [linked_box_ids, qty_left];
 }
 
 
 function get_boxes_in_window(expiration_date) {
-    // console.log(`getting boxes in window for ${expiration_date.toISOString().substring(0,10)}`);
     let today = get_the_correct_today();
     let date0 = new Date(today.getTime() + (8 * 24 * 60 * 60 * 1000));
     date0 = `'` + date0.toISOString().substring(0,10) + `'`;
-    // console.log(date0);
     expiration_date = new Date(expiration_date);
     let date1 = new Date(expiration_date.getTime() - (8 * 24 * 60 * 60 * 1000));
     date1 = `'` + date1.toISOString().substring(0,10) + `'`;
-    // console.log(date1);
     return new Promise(function(resolve, reject) {
         pool.query(
             "SELECT * FROM Boxes WHERE box_date BETWEEN " + date0 + " AND " + date1 + ";",
             function(err, result) {
                 if (err) reject(err);
                 else {
-                    // console.log(`boxes for ${expiration_date.toISOString().substring(0,10)}`);
-                    // console.log(result);
                     resolve(result);
                 }
             }
@@ -161,35 +155,21 @@ function audit_B_H_for_harvest(harvest, box_ids_and_qty_left) {
     let qty_left = box_ids_and_qty_left[1];
     let linked_box_ids = box_ids_and_qty_left[0];
     let harvest_id = harvest.harvest_id;
-    // console.log(`box_ids_and_qty_left in audit for harvest ${harvest_id}`);
-    // console.log(box_ids_and_qty_left);
-    // console.log(`qty_left in audit for harvest ${harvest_id}`);
-    // console.log(qty_left);
 
+    // removed any nulled harvests from all boxes
+    if (harvest.row_id == null) {
+        for (link in linked_box_ids) rmv_B_H(linked_box_ids[link], harvest_id)
+    }
 
+    // add/update/remove harvest from boxes based on audit of qty
     let got_boxes = get_boxes_in_window(harvest.expiration_date);
     got_boxes.then(boxes => {
-        // console.log(`boxes`);
-        // console.log(boxes);
         counted_boxes = get_customer_counts(boxes);
         counted_boxes.then( counts => {
-            // console.log(`==-==-==-==-==`);
-            // console.log(`for harvest ${harvest.harvest_id}`);
-            // console.log(`--=--=--=--=--`);
-            // console.log(`counts`);
-            // console.log(counts);
             let boxes_to_serve = counts.reduce((a, b) => a + b, 0);
-            // console.log(`boxes_to_serve`);
-            // console.log(boxes_to_serve);
             if (boxes_to_serve == 0) return;
             let base_amount = Math.floor(qty_left/boxes_to_serve);
-            // console.log(`base_amount`);
-            // console.log(base_amount);
-            // console.log(`qty_left before base_amount_served reduction`);
-            // console.log(qty_left);
             qty_left -= base_amount * boxes_to_serve;
-            // console.log(`after`);
-            // console.log(qty_left);
             for (b in boxes) {
                 if (linked_box_ids.includes(boxes[b].box_id)) {
                     removeItemOnce(linked_box_ids, boxes[b].box_id);
@@ -214,10 +194,8 @@ function audit_B_H_for_harvest(harvest, box_ids_and_qty_left) {
 }
 
 
-function get_relevant_boxes_with_counts(harvest) {   //*** rename ***
+function get_boxes_and_recipients_by_harvest(harvest) {   //*** rename ***
     let qty_left = harvest.quantity_harvested - harvest.quantity_distributed;
-    // console.log(`qty_left for harvest ${harvest.harvest_id}`);
-    // console.log(qty_left);
     return new Promise(function(resolve, reject) {
         pool.query(
             "SELECT Boxes_Harvests.box_id, box_date, number_packed, qty_per FROM Boxes_Harvests LEFT JOIN Boxes ON Boxes_Harvests.box_id = Boxes.box_id WHERE harvest_id = " + harvest.harvest_id + ";",
@@ -233,11 +211,7 @@ function get_relevant_boxes_with_counts(harvest) {   //*** rename ***
                         for (r in result) {
                             result[r].number_of_customers = value[r];
                         }
-                        // console.log(`results after customer counts for harvest ${harvest.harvest_id}`);
-                        // console.log(result);
                         let box_ids_and_qty_left = parse_boxes_for_dist(result, qty_left);
-                        // console.log(`res of parser for harvest ${harvest.harvest_id}`);
-                        // console.log(box_ids_and_qty_left);
                         audit_B_H_for_harvest(harvest, box_ids_and_qty_left);
                         resolve();
                     });
@@ -254,7 +228,7 @@ const audit_Boxes_Harvests = () => {
 
     let update_return_code = relevant_harvests.then(harvests => {
         distribution_updates = harvests.map(harvest => {
-            return get_relevant_boxes_with_counts(harvest);
+            return get_boxes_and_recipients_by_harvest(harvest);
         });
         return Promise.all(distribution_updates).then(statuses => {return statuses})
     });
