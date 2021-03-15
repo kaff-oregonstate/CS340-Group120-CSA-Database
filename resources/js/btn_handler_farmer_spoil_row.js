@@ -27,7 +27,7 @@ function get_harvests_by_row(row_id) {
         let letter = {};
         letter.row_id = row_id;
         let envelope = new XMLHttpRequest();
-        envelope.open('POST','/farmer-spoil-row/try',true);
+        envelope.open('POST','/farmer/spoil-row/try',true);
         envelope.setRequestHeader("Content-Type", "application/json");
         envelope.addEventListener('load',function(){
             if(envelope.status >=200 && envelope.status < 400){
@@ -49,7 +49,7 @@ function DELETE_crop_row(row_id) {
         let letter = {};
         letter.row_id = row_id;
         let envelope = new XMLHttpRequest();
-        envelope.open('POST','/farmer-spoil-row/do',true);
+        envelope.open('POST','/farmer/spoil-row/do',true);
         envelope.setRequestHeader("Content-Type", "application/json");
         envelope.addEventListener('load',function(){
             if(envelope.status >=200 && envelope.status < 400){
@@ -112,7 +112,7 @@ function confirm_DELETE_crop_row(row_id) {
         notification.appendChild(t);
         link = notification.appendChild(document.createElement('a'));
         // link.setAttribute("class", "text-decoration-none text-reset");
-        link.setAttribute("href", "/farmer-view-produce-on-hand")
+        link.setAttribute("href", "/farmer/view-produce-on-hand")
         link.innerText = "view produce on hand";
         t = document.createTextNode(" to verify NULL crop types on any linked Harvests.");
         notification.appendChild(t);

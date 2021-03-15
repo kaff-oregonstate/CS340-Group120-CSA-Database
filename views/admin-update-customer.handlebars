@@ -49,23 +49,23 @@
                         </tr>
                     </thead>
                     <tbody id="update-delete-table">
-                        {{#each customers}}   
+                        {{#each customers}}
                         <tr data-customer="{{customer_id}}" >
                             <td>
-                                <input type="text" name="first-name-action" id="first-name-action" value="{{first_name}}" disabled="true">
+                                <input type="text" name="first-name-action" class="first-name-action" value="{{first_name}}" disabled="true">
                             </td>
                             <td>
-                                <input type="text" name="last-name-action" id="last-name-action" value="{{last_name}}" disabled="true">
+                                <input type="text" name="last-name-action" class="last-name-action" value="{{last_name}}" disabled="true">
                             </td>
                             <td>
-                                <input type="date" name="date-paid-action" id="date-paid-action" value="{{moment date_paid format="YYYY-MM-DD"}}" disabled="true">
+                                <input type="date" name="date-paid-action" class="date-paid-action" value="{{moment date_paid format="YYYY-MM-DD"}}" disabled="true">
                             </td>
                             <td>
                                 <button class="btn btn-green update-customer" type="button">Update</button>
                                 <button class="btn btn-green delete-customer" type="button">Delete</button>
                             </td>
                         </tr>
-                        {{/each}}    
+                        {{/each}}
 
                     </tbody>
                 </table>
@@ -75,4 +75,4 @@
 
     </div>
 </div>
-<script src="source/js/admin_update_customer.js" charset="utf-8" id="adminButtonsHandler"></script>
+<script src="/source/js/admin_update_customer.js" charset="utf-8" id="adminButtonsHandler"></script>

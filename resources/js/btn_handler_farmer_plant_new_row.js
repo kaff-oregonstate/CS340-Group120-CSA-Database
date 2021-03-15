@@ -30,7 +30,7 @@ function func_INSERT_crop_rows() {
 
     // two requests (nested):
         // first to backbone so INSERT can be made
-        // second to /farmer-plant-new-row just reloading page
+        // second to /farmer/plant-new-row just reloading page
 
     // request to backbone
 

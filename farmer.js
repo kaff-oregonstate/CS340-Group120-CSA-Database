@@ -21,11 +21,11 @@ router.use(function timeLog(req, res, next) {
 
 //routes for farmer and planting pages
 router.get('/farmer', funcFarmer);
-router.get('/farmer-plant-new-row', func_farmer_new_crop_rows);
-router.get('/farmer-harvest-new-row', func_farmer_new_harvest);
-router.get('/farmer-view-planted-rows', func_farmer_view_rows);
-router.get('/farmer-view-produce-on-hand', func_farmer_view_produce);
-router.get('/farmer-add-new-crop-type', func_add_new_crop_type)
+router.get('/farmer/plant-new-row', func_farmer_new_crop_rows);
+router.get('/farmer/harvest-new-row', func_farmer_new_harvest);
+router.get('/farmer/view-planted-rows', func_farmer_view_rows);
+router.get('/farmer/view-produce-on-hand', func_farmer_view_produce);
+router.get('/farmer/add-new-crop-type', func_add_new_crop_type)
 
 // -----FARMING MENU PAGE ROUTE-----
 function funcFarmer(req, res){
@@ -39,7 +39,7 @@ function funcFarmer(req, res){
     res.render('farmer', content);
 }
 
-// -----FARMER PLANT ROW PAGE ROUTES----- 
+// -----FARMER PLANT ROW PAGE ROUTES-----
 
 //GET CROP TYPES
 function func_farmer_new_crop_rows(req, res){
@@ -85,7 +85,7 @@ function func_INSERT_crop_rows(req, res, next) {
 }
 
 
-// -----FARMER HARVEST ROW PAGE ROUTE----- 
+// -----FARMER HARVEST ROW PAGE ROUTE-----
 
 //GET CROP ROWS
 function func_farmer_new_harvest(req, res){
@@ -136,7 +136,7 @@ function func_INSERT_harvests(req, res, next) {
 }
 
 
-// -----FARMER VIEW PLANTED ROW PAGE ROUTE----- 
+// -----FARMER VIEW PLANTED ROW PAGE ROUTE-----
 
 //GET CROP ROWS
 function func_farmer_view_rows(req, res){
@@ -163,7 +163,7 @@ function func_farmer_view_rows(req, res){
 }
 
 
-// -----FARMER VIEW PRODUCE ON HAND PAGE ROUTE----- 
+// -----FARMER VIEW PRODUCE ON HAND PAGE ROUTE-----
 
 //GET HARVESTS
 function func_farmer_view_produce(req, res){
@@ -231,7 +231,7 @@ function func_INSERT_crop_types(req, res, next) {
 }
 
 // -----FARMER SPOIL AND RECALL HARVESTS-----
-router.use('/farmer-spoil-row', require('./spoil-row.js'));
+router.use('/farmer/spoil-row', require('./spoil-row.js'));
 
 module.exports = router;
 //======================================================================//
