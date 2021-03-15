@@ -5,12 +5,12 @@ const get_crop_rows_query = 'SELECT row_id, Crop_Rows.crop_id, mature_date, crop
 module.exports = function(){
 
 var express = require('express');
-express().use('/source', express.static('resources')); // !!!
+// express().use('/source', express.static('resources')); // !!!
 var router = express.Router();
-var mysql = require('./resources/js/dbcon.js'); // !!!
+var mysql = require('./dbcon.js'); // !!!
 const pool = mysql.pool;
 
-const audits = require('./resources/js/algorithmic_auditing.js');
+const audits = require('./algorithmic_auditing.js');
 function audit_Boxes_Harvests() { return audits.audit_Boxes_Harvests(); }
 function audit_Boxes_Customers() { return audits.audit_Boxes_Customers(); }
 
