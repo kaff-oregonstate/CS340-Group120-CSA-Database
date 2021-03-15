@@ -123,7 +123,7 @@ function get_box_with_details_by_date() {
         let letter = {};
         letter.box_date = box_date;
         let envelope = new XMLHttpRequest();
-        envelope.open('POST','/admin-boxes-view/details/date',true);
+        envelope.open('POST','/admin/boxes-view/details/date',true);
         envelope.setRequestHeader("Content-Type", "application/json");
         envelope.addEventListener('load',function(){
             if(envelope.status >=200 && envelope.status < 400){
@@ -152,7 +152,7 @@ function get_box_with_details_by_id() {
         let letter = {};
         letter.box_id = box_id;
         let envelope = new XMLHttpRequest();
-        envelope.open('POST','/admin-boxes-view/details/id',true);
+        envelope.open('POST','/admin/boxes-view/details/id',true);
         envelope.setRequestHeader("Content-Type", "application/json");
         envelope.addEventListener('load',function(){
             if(envelope.status >=200 && envelope.status < 400){

@@ -42,7 +42,7 @@ async function search_customer(event){
             //store customers in variable, create new table-body with search data
             var customers = JSON.parse(xhr.response)
             make_search_table(customers)
-            
+
         } else {
             console.log("Error in network request: " + xhr.statusText);
         }
@@ -64,7 +64,7 @@ document.querySelector('#update-delete-table').addEventListener('click', click_u
 async function click_ud_table(event){
     //save location of user click in target
     var target = event.target;
-    
+
     //if the target has a customer_id
     if(target.parentNode.parentNode.dataset.customer){
         //store the customer id of row clicked by user
@@ -72,12 +72,12 @@ async function click_ud_table(event){
 
         //is the button clicked an update or delete button
         if(target.getAttribute('class') == "btn btn-green update-customer")
-        {   
+        {
             //if row is disabled enable, if row is enabled collect info & disable
             if(target.innerHTML == "Update"){
                 enable_row(target)
                 toggle_button(target)
-            
+
             }else{
                 // toggle_button(target)
                 update_customer(target, customer_id)
@@ -116,7 +116,7 @@ async function update_customer(target, customer_id){
 
     //if all fields are filled out switch button to update & send request
     toggle_button(target)
-    
+
     // remove error message
     $("#update-delete-error").html("")
 
@@ -147,7 +147,7 @@ async function delete_customer(customer_id){
         //create HTTP request object and open request
         let xhr = new XMLHttpRequest();
         xhr.open('POST', '/DELETE-customer' + customer_id, true)
-    
+
         //event listener for response from server
         xhr.addEventListener('load', function(){
             if(xhr.status >= 200 && xhr.status < 400){
@@ -156,7 +156,7 @@ async function delete_customer(customer_id){
                 console.log("Error in network request: " + xhr.statusText);
             }
         });
-    
+
         //convert JS object to JSON and send to server
         xhr.send(JSON.stringify(payload));
 }
@@ -186,9 +186,9 @@ function enable_row(target){
     date_input.disabled = false
 }
 
-//function that disables rows in update-delete table 
+//function that disables rows in update-delete table
 function disable_row(target){
-    
+
     var first_name_input = target.parentNode.parentNode.children[0].children[0]
     var last_name_input = target.parentNode.parentNode.children[1].children[0]
     var date_input = target.parentNode.parentNode.children[2].children[0]
@@ -203,7 +203,7 @@ function disable_row(target){
 function toggle_button(target){
 
     if(target.innerHTML == "Update"){
-        target.innerHTML = "Done" 
+        target.innerHTML = "Done"
     }else if(target.innerHTML == "Done"){
         disable_row(target)
         target.innerHTML = "Update"
@@ -227,12 +227,12 @@ function make_search_table(customers){
             //collect customer_id, first name, last name, date paid values
             var name = key;
             var value = customers[i][key];
-            
+
             //take the customer id value and make a dataset attribute
             if(key == "customer_id"){
                 new_row.setAttribute("data-customer", customers[i][key])
             }
-            
+
             //store a new td cell in new_data variable
             var new_data = make_table_data(name, value);
 
@@ -240,7 +240,7 @@ function make_search_table(customers){
             if(new_data){
                 new_row.appendChild(new_data)
             }
-            
+
         }
 
         //add update/delete buttons to each customer row
@@ -249,7 +249,7 @@ function make_search_table(customers){
 
         //add the generated row to the table
         table_body.appendChild(new_row)
-        
+
     }
 }
 
@@ -287,17 +287,17 @@ function make_input(name,value){
         case "first_name":
             var input = document.createElement("input");
             type = "text";
-            id="first-name-action";
+            clss = "first-name-action";
             break;
         case "last_name":
             var input = document.createElement("input");
             type = "text";
-            id="last-name-action";
+            clss="last-name-action";
             break;
         case "date_paid":
             var input = document.createElement("input");
             type = "date";
-            id="date-paid-action";
+            clss="date-paid-action";
             value = value.slice(0,10);
             break;
     }
@@ -305,7 +305,7 @@ function make_input(name,value){
     //if not customer id make input and add attributes
     if(type!= null && type!= "id"){
         input.setAttribute("type", type);
-        input.setAttribute("id", id);
+        input.setAttribute("class", clss);
         input.setAttribute("disabled", "true");
         input.defaultValue = value;
         return input;
@@ -330,7 +330,7 @@ function make_buttons(){
     //add the delete button
     delete_button.setAttribute("class" , "btn btn-green delete-customer")
     delete_button.setAttribute("type", "button")
-    delete_button.innerHTML = "Delete" 
+    delete_button.innerHTML = "Delete"
     action_column.appendChild(delete_button)
 
     return action_column;

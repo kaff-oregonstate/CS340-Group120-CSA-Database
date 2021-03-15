@@ -22,7 +22,7 @@ const pack_boxes_query = "UPDATE Boxes SET `number_packed` = ? WHERE `box_id` = 
 router.get('/box-packer', func_box_packer);
 
 
-// -----BOX PACKING PAGE ROUTES----- 
+// -----BOX PACKING PAGE ROUTES-----
 
 //GET BOX CONTENTS
 function func_box_packer(req, res){
@@ -34,6 +34,7 @@ function func_box_packer(req, res){
             {link: '/', page_name: 'home'}
         ]
     };
+    audit_Boxes_Harvests();
     get_closest_box(get_the_correct_today()).then(current_box => {
     // get_closest_box(new Date('2021-06-04')).then(current_box => {
         content.box_details = current_box;
@@ -97,9 +98,9 @@ module.exports = router;
     // function audit_Boxes_Customers() { return audits.audit_Boxes_Customers(); }
     // function get_next_box() { return audits.get_next_box(); }
     function get_customer_counts(boxes) {return audits.get_customer_counts(boxes); }
-    
-    
-    
+
+
+
     function set_time_to_midnight(date) {
         var date_string = date.getFullYear() + '-';
         if ((date.getUTCMonth()+1) < 10) date_string += '0' + (date.getUTCMonth()+1) + '-';
@@ -111,7 +112,7 @@ module.exports = router;
         date = new Date(date_string);
         return new Date(date.getTime() - offset);
     }
-    
+
     function get_closest_box_helper(results, date) {
         date = set_time_to_midnight(date);
         var next_box;
@@ -129,7 +130,7 @@ module.exports = router;
         }
         return next_box;
     }
-    
+
     function get_closest_box(date) {
         return new Promise(function(resolve, reject) {
             pool.query(
@@ -141,8 +142,7 @@ module.exports = router;
             )
         });
     }
-    
+
     audit_Boxes_Harvests();
-    
-    
-    
+
+

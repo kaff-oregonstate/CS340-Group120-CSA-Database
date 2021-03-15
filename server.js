@@ -13,32 +13,33 @@
 
     const express = require('express');
     const app = express();
-    
+
     const handlebars = require('express-handlebars').create({defaultLayout:'main'});
     var helpers = require('handlebars-helpers')();
-    
+
     app.engine('handlebars', handlebars.engine);
     app.set('view engine', 'handlebars');
     // app.set('views', path.join(__dirname,"views")); //TESTING to fix issue
-    app.use('/source', express.static('resources'));
-    
+    const path = require('path')
+    app.use('/source', express.static(path.join(__dirname, 'resources')));
+
     const bodyParser = require('body-parser');
     app.use(bodyParser.urlencoded({extended: false}));
     app.use(bodyParser.json());
-    
+
     // magic from Millie
     const CORS = require('cors');
     app.use(CORS());
-    
+
     // const session = require('express-session');
     // app.use(session({secret: 'verySecretPassword'}));
 
     // WHAT'S THIS AMELIA TO DAVID?
-    app.use('/admin-boxes-view/details', require('./view-box-details.js'))
-    
+
+
     var mysql = require('./resources/js/dbcon.js');
     const pool = mysql.pool;
-    
+
     const port = 28394;
     app.set('port', port);
 
@@ -75,7 +76,7 @@ app.use(function(req,res){
     res.status(404);
     res.send('404 - Not Found');
   });
-  
+
 app.use(function(err, req, res, next){
     console.error(err.stack);
     res.type('plain/text');
@@ -93,5 +94,5 @@ app.use(function(err, req, res, next){
 app.listen(app.get('port'), function(){
     console.log('Express started on http://localhost:' + app.get('port') + '; press CMD-. to terminate.')
   });
-  
+
 
