@@ -676,6 +676,7 @@ function get_next_box() { return audits.get_next_box(); }
 function get_customer_counts(boxes) {return audits.get_customer_counts(boxes); }
 
 
+
 function set_time_to_midnight(date) {
     var date_string = date.getFullYear() + '-';
     if ((date.getUTCMonth()+1) < 10) date_string += '0' + (date.getUTCMonth()+1) + '-';
