@@ -31,7 +31,6 @@ const app = express();
 
 const handlebars = require('express-handlebars').create({defaultLayout:'main'});
 var helpers = require('handlebars-helpers')();
-// const path = require('path');
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
@@ -675,6 +674,7 @@ function audit_Boxes_Harvests() { return audits.audit_Boxes_Harvests(); }
 function audit_Boxes_Customers() { return audits.audit_Boxes_Customers(); }
 function get_next_box() { return audits.get_next_box(); }
 function get_customer_counts(boxes) {return audits.get_customer_counts(boxes); }
+
 
 
 function set_time_to_midnight(date) {
