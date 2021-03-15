@@ -231,7 +231,7 @@ function func_INSERT_crop_types(req, res, next) {
 }
 
 // -----FARMER SPOIL AND RECALL HARVESTS-----
-router.use('/farmer/spoil-row', require('./spoil-row.js'));
+router.use('/farmer/spoil-row', require('./resources/js/spoil-row.js'));
 
 module.exports = router;
 //======================================================================//

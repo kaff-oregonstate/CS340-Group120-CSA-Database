@@ -7,9 +7,9 @@ const get_box_customers_query = "SELECT first_name, last_name, Customers.custome
 module.exports = function(){
 
 var express = require('express');
-express().use('/source', express.static('resources'));
+// express().use('/source', express.static('resources'));
 var router = express.Router();
-var mysql = require('./resources/js/dbcon.js');
+var mysql = require('./dbcon.js');
 const pool = mysql.pool;
 
 

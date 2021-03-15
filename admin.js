@@ -256,7 +256,7 @@ router.post('/INSERT-box', function(req, res, next){
 
   });
 
-router.use('/admin/boxes-view/details', require('./view-box-details.js'))
+router.use('/admin/boxes-view/details', require('./resources/js/view-box-details.js'))
 
 module.exports = router;
 
