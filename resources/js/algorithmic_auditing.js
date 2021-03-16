@@ -159,6 +159,7 @@ function audit_B_H_for_harvest(harvest, box_ids_and_qty_left) {
     // removed any nulled harvests from all boxes
     if (harvest.row_id == null) {
         for (link in linked_box_ids) rmv_B_H(linked_box_ids[link], harvest_id)
+        return
     }
 
     // add/update/remove harvest from boxes based on audit of qty
