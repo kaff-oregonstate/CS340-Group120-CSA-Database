@@ -19,7 +19,6 @@
 
     app.engine('handlebars', handlebars.engine);
     app.set('view engine', 'handlebars');
-    // app.set('views', path.join(__dirname,"views")); //TESTING to fix issue
     const path = require('path')
     app.use('/source', express.static(path.join(__dirname, 'resources')));
 
@@ -30,12 +29,6 @@
     // magic from Millie
     const CORS = require('cors');
     app.use(CORS());
-
-    // const session = require('express-session');
-    // app.use(session({secret: 'verySecretPassword'}));
-
-    // WHAT'S THIS AMELIA TO DAVID?
-
 
     var mysql = require('./resources/js/dbcon.js');
     const pool = mysql.pool;

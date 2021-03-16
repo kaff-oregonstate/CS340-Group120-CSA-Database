@@ -1,21 +1,24 @@
+// farmer.js
+
 var express = require('express');
 var router = express.Router();
 
 var mysql = require('./resources/js/dbcon.js');
 const pool = mysql.pool;
 
-router.use(function timeLog(req, res, next) {
-    console.log('Time: ', Date.now());
-    next();
-  });
+const audits = require('./resources/js/algorithmic_auditing.js');
+function audit_Boxes_Harvests() { return audits.audit_Boxes_Harvests(); }
+function audit_Boxes_Customers() { return audits.audit_Boxes_Customers(); }
 
-  // ~~~~~~~~ ADMIN SQL QUERIES ~~~~~~~~~~~~
-  const get_crop_types_query = 'SELECT crop_name, crop_id FROM Crop_Types;';
-  const add_crop_row_query = "INSERT INTO Crop_Rows (`crop_id`, `mature_date`) VALUES (?, ?);";
-  const get_crop_rows_query = 'SELECT row_id, Crop_Rows.crop_id, mature_date, crop_name FROM Crop_Rows LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
-  const add_harvest_query = "INSERT INTO Harvests (`row_id`, `quantity_harvested`, `harvest_date`, `expiration_date`) VALUES (?, ?, ?, ?);";
-  const get_harvests_query = 'SELECT harvest_id, crop_name, quantity_harvested, harvest_date, expiration_date, Harvests.row_id FROM Harvests LEFT JOIN Crop_Rows ON Harvests.row_id = Crop_Rows.row_id LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
-  const add_crop_type_query = "INSERT INTO Crop_Types (`crop_name`) VALUES (?);"
+
+// ~~~~~~~~ FARMER SQL QUERIES ~~~~~~~~~~~~
+
+const get_crop_types_query = 'SELECT crop_name, crop_id FROM Crop_Types;';
+const add_crop_row_query = "INSERT INTO Crop_Rows (`crop_id`, `mature_date`) VALUES (?, ?);";
+const get_crop_rows_query = 'SELECT row_id, Crop_Rows.crop_id, mature_date, crop_name FROM Crop_Rows LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
+const add_harvest_query = "INSERT INTO Harvests (`row_id`, `quantity_harvested`, `harvest_date`, `expiration_date`) VALUES (?, ?, ?, ?);";
+const get_harvests_query = 'SELECT harvest_id, crop_name, quantity_harvested, harvest_date, expiration_date, Harvests.row_id FROM Harvests LEFT JOIN Crop_Rows ON Harvests.row_id = Crop_Rows.row_id LEFT JOIN Crop_Types ON Crop_Rows.crop_id = Crop_Types.crop_id;';
+const add_crop_type_query = "INSERT INTO Crop_Types (`crop_name`) VALUES (?);"
 
 // ~~~~~~~~ ROUTES IN FARMER ~~~~~~~~~~~~
 
@@ -61,7 +64,7 @@ function func_farmer_new_crop_rows(req, res){
     )
 }
 
-//INSET CROP ROW
+// INSERT CROP ROW
 router.post('/INSERT-crop-rows', func_INSERT_crop_rows);
 function func_INSERT_crop_rows(req, res, next) {
     var {crop_id, mature_date} = req.body;
@@ -87,7 +90,7 @@ function func_INSERT_crop_rows(req, res, next) {
 
 // -----FARMER HARVEST ROW PAGE ROUTE-----
 
-//GET CROP ROWS
+// GET CROP ROWS
 function func_farmer_new_harvest(req, res){
     content = {
         title: 'Rubyfruit Farm – Enter Row Harvested',
@@ -111,7 +114,7 @@ function func_farmer_new_harvest(req, res){
     )
 }
 
-//INSERT HARVEST
+// INSERT HARVEST
 router.post('/INSERT-harvests', func_INSERT_harvests);
 function func_INSERT_harvests(req, res, next) {
     var {row_id, quantity, harvest_date, expiration_date} = req.body;
@@ -138,7 +141,7 @@ function func_INSERT_harvests(req, res, next) {
 
 // -----FARMER VIEW PLANTED ROW PAGE ROUTE-----
 
-//GET CROP ROWS
+// GET CROP ROWS
 function func_farmer_view_rows(req, res){
     content = {
         title: 'Rubyfruit Farm – View Rows',
@@ -165,7 +168,7 @@ function func_farmer_view_rows(req, res){
 
 // -----FARMER VIEW PRODUCE ON HAND PAGE ROUTE-----
 
-//GET HARVESTS
+// GET HARVESTS
 function func_farmer_view_produce(req, res){
     content = {
         title: 'Rubyfruit Farm – View Produce',
@@ -207,7 +210,7 @@ function func_add_new_crop_type(req, res){
     res.render('farmer-add-new-crop-type', content);
 }
 
-//INSERT CROP TYPES
+// INSERT CROP TYPES
 router.post('/INSERT-crop-types', func_INSERT_crop_types);
 function func_INSERT_crop_types(req, res, next) {
     var {crop_name} = req.body;
@@ -233,14 +236,9 @@ function func_INSERT_crop_types(req, res, next) {
 // -----FARMER SPOIL AND RECALL HARVESTS-----
 router.use('/farmer/spoil-row', require('./resources/js/spoil-row.js'));
 
-module.exports = router;
+
 //======================================================================//
 
-      ///////////////////////////
-     // David's scratch work. //
-    ///////////////////////////
+module.exports = router;
 
-    const audits = require('./resources/js/algorithmic_auditing.js');
-    function audit_Boxes_Harvests() { return audits.audit_Boxes_Harvests(); }
-    function audit_Boxes_Customers() { return audits.audit_Boxes_Customers(); }
-
+//======================================================================//
