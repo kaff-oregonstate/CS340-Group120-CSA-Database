@@ -5,30 +5,15 @@ npm install express-handlebars
 npm install express-session
 npm install body-parser
 npm install mysql
-
 npm install cors
 npm install handlebars-helpers
 
-
-
-
-
-
-// npm install request
-// npm install jquery
-// npm install http-server
-
-
 npm install forever
+
+// use the following line instead of "forever" command on flip3
 ./node_modules/forever/bin/forever
 
 
 
-// get local ip address:
-// ipconfig getifaddr en0
-
 
 git clone https://github.com/kaff-oregonstate/CS340-Group120-CSA-Database.git
-
-	kaff-oregonstate
-	e6w2JKvmw6gg4zG
